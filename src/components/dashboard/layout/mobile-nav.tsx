@@ -16,6 +16,7 @@ import type { NavItemConfig } from "@/types/nav";
 import { paths } from "@/paths";
 import { isNavItemActive } from "@/lib/is-nav-item-active";
 import { Logo } from "@/components/core/logo";
+import { Login } from "@/components/core/login";
 
 import { icons } from "./nav-icons";
 import { WorkspacesSwitch } from "./workspaces-switch";
@@ -73,9 +74,11 @@ export function MobileNav({ items = [], open, onClose }: MobileNavProps): React.
 					</Box>
 				</div>
 			</Stack>
+			<Box sx={{ borderTop: '1px solid', borderColor: 'var(--NavItem-children-border)' }} />
 			<Box component="nav" sx={{ flex: "1 1 auto", p: 2 }}>
 				{renderNavGroups({ items, onClose, pathname })}
 			</Box>
+			<Login />
 		</Drawer>
 	);
 }
