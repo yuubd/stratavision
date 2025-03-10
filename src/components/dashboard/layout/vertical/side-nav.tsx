@@ -19,6 +19,7 @@ import type { ColorScheme } from "@/styles/theme/types";
 
 import { icons } from "../nav-icons";
 import { WorkspacesSwitch } from "../workspaces-switch";
+import { Login } from "../../../core/login";
 import { navColorStyles } from "./styles";
 
 const logoColors = {
@@ -33,9 +34,7 @@ export interface SideNavProps {
 
 export function SideNav({ color = "evident", items = [] }: SideNavProps): React.JSX.Element {
 	const pathname = usePathname();
-
 	const { colorScheme = "light" } = useColorScheme();
-
 	const styles = navColorStyles[colorScheme][color];
 	const logoColor = logoColors[colorScheme][color];
 
@@ -63,6 +62,7 @@ export function SideNav({ color = "evident", items = [] }: SideNavProps): React.
 					</Box>
 				</div>
 			</Stack>
+			<Box sx={{ borderTop: '1px solid', borderColor: 'var(--NavItem-children-border)' }} />
 			<Box
 				component="nav"
 				sx={{
@@ -75,6 +75,7 @@ export function SideNav({ color = "evident", items = [] }: SideNavProps): React.
 			>
 				{renderNavGroups({ items, pathname })}
 			</Box>
+			<Login />
 		</Box>
 	);
 }

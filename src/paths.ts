@@ -46,6 +46,7 @@ export const paths = {
 			resetPassword: { centered: "/auth/samples/reset-password/centered", split: "/auth/samples/reset-password/split" },
 			verifyCode: { centered: "/auth/samples/verify-code/centered", split: "/auth/samples/verify-code/split" },
 		},
+		login: "/auth/login"
 	},
 	dashboard: {
 		overview: "/dashboard",
