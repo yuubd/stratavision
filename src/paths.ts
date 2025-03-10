@@ -57,6 +57,8 @@ export const paths = {
 			security: "/dashboard/settings/security",
 			team: "/dashboard/settings/team",
 		},
+		aiSummarize: "/dashboard/ai-summarize",
+		files: "/dashboard/files",
 		academy: { browse: "/dashboard/academy", details: (courseId: string) => `/dashboard/academy/courses/${courseId}` },
 		analytics: "/dashboard/analytics",
 		blank: "/dashboard/blank",

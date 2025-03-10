@@ -29,6 +29,8 @@ import { Truck as TruckIcon } from "@phosphor-icons/react/dist/ssr/Truck";
 import { Upload as UploadIcon } from "@phosphor-icons/react/dist/ssr/Upload";
 import { Users as UsersIcon } from "@phosphor-icons/react/dist/ssr/Users";
 import { WarningDiamond as WarningDiamondIcon } from "@phosphor-icons/react/dist/ssr/WarningDiamond";
+import { Database as DatabaseIcon } from "@phosphor-icons/react/dist/ssr/Database";
+import { FileText as FileTextIcon } from "@phosphor-icons/react/dist/ssr/FileText";
 
 export const icons = {
 	"address-book": AddressBookIcon,
@@ -40,6 +42,7 @@ export const icons = {
 	"currency-eth": CurrencyEthIcon,
 	"envelope-simple": EnvelopeSimpleIcon,
 	"file-dashed": FileDashedIcon,
+	"file-text": FileTextIcon,
 	"file-x": FileXIcon,
 	"graduation-cap": GraduationCapIcon,
 	"read-cv-logo": ReadCvLogoIcon,
@@ -61,4 +64,5 @@ export const icons = {
 	truck: TruckIcon,
 	upload: UploadIcon,
 	users: UsersIcon,
+	database: DatabaseIcon,
 } as Record<string, Icon>;

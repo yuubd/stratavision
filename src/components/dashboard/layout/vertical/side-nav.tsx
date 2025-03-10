@@ -62,7 +62,6 @@ export function SideNav({ color = "evident", items = [] }: SideNavProps): React.
 						<Logo color={logoColor} height={32} width={122} />
 					</Box>
 				</div>
-				<WorkspacesSwitch />
 			</Stack>
 			<Box
 				component="nav"

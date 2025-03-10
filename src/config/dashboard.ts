@@ -19,14 +19,11 @@ export const dashboardConfig = {
 	navColor: "evident",
 	navItems: [
 		{
-			key: "dashboards",
-			title: "Dashboards",
-			items: [{ key: "overview", title: "Overview", href: paths.dashboard.overview, icon: "house" }],
-		},
-		{
-			key: "misc",
-			title: "Misc",
-			items: [{ key: "blank", title: "Blank", href: paths.dashboard.blank, icon: "file-dashed" }],
+			key: "main",
+			items: [
+				{ key: "ai-summarize", title: "AI Summarize", href: paths.dashboard.aiSummarize, icon: "file-text" },
+				{ key: "files", title: "Files", href: paths.dashboard.files, icon: "database" }
+			],
 		},
 	],
 } satisfies DashboardConfig;
