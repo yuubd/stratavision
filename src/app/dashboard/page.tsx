@@ -22,7 +22,7 @@ import { AppUsage } from "@/components/dashboard/overview/app-usage";
 import { Events } from "@/components/dashboard/overview/events";
 import { HelperWidget } from "@/components/dashboard/overview/helper-widget";
 import { Subscriptions } from "@/components/dashboard/overview/subscriptions";
-import { Summary } from "@/components/dashboard/overview/summary";
+				import { Summary } from "@/components/dashboard/overview/summary";
 
 export const metadata = { title: `Overview | Dashboard | ${appConfig.name}` } satisfies Metadata;
 
