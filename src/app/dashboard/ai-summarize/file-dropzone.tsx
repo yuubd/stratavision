@@ -23,8 +23,8 @@ export function FileDropzone({ title, description, subtitle, ...props }: FileDro
 	return (
 		<Box
 			sx={{
-				border: "1px dashed var(--mui-palette-divider)",
-				borderRadius: 1,
+				border: "2px dashed var(--mui-palette-divider)",
+				borderRadius: 2,
 				cursor: "pointer",
 				display: "flex",
 				flexDirection: "column",
@@ -72,7 +72,11 @@ export function FileDropzone({ title, description, subtitle, ...props }: FileDro
 					<Typography variant="body1" sx={{ fontWeight: 500 }}>
 						{description}
 					</Typography>
-					<Typography color="text.secondary" variant="body2">
+					<Typography 
+						color="text.secondary" 
+						variant="body2"
+						sx={{ whiteSpace: "pre-line" }}
+					>
 						{subtitle}
 					</Typography>
 				</Stack>

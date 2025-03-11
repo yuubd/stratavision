@@ -28,6 +28,7 @@ export function MainNav({ items }: MainNavProps): React.JSX.Element {
 					bgcolor: "var(--MainNav-background)",
 					left: 0,
 					position: "sticky",
+					pt: { lg: "var(--Layout-gap)" },
 					top: 0,
 					width: "100%",
 					zIndex: "var(--MainNav-zIndex)",
