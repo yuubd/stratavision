@@ -4,6 +4,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import { List as ListIcon } from "@phosphor-icons/react/dist/ssr/List";
+import { usePathname } from "next/navigation";
 
 import type { NavItemConfig } from "@/types/nav";
 import { MobileNav } from "../mobile-nav";
@@ -14,6 +15,8 @@ export interface MainNavProps {
 
 export function MainNav({ items }: MainNavProps): React.JSX.Element {
 	const [openNav, setOpenNav] = React.useState<boolean>(false);
+	const pathname = usePathname();
+	const isAiSummarizePage = pathname === "/dashboard/ai-summarize";
 
 	return (
 		<React.Fragment>
@@ -32,7 +35,7 @@ export function MainNav({ items }: MainNavProps): React.JSX.Element {
 			>
 				<Box
 					sx={{
-						borderBottom: "1px solid var(--MainNav-divider)",
+						borderBottom: isAiSummarizePage ? "none" : "1px solid var(--MainNav-divider)",
 						display: "flex",
 						flex: "1 1 auto",
 						minHeight: "var(--MainNav-height)",
