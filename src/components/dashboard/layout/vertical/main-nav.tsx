@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 
 import type { NavItemConfig } from "@/types/nav";
 import { MobileNav } from "../mobile-nav";
+import { SearchBar } from "../../../../app/dashboard/files/search-bar";
 
 export interface MainNavProps {
 	items: NavItemConfig[];
@@ -17,6 +18,7 @@ export function MainNav({ items }: MainNavProps): React.JSX.Element {
 	const [openNav, setOpenNav] = React.useState<boolean>(false);
 	const pathname = usePathname();
 	const isAiSummarizePage = pathname === "/dashboard/ai-summarize";
+	const isFilesPage = pathname === "/dashboard/files";
 
 	return (
 		<React.Fragment>
@@ -36,23 +38,35 @@ export function MainNav({ items }: MainNavProps): React.JSX.Element {
 			>
 				<Box
 					sx={{
-						borderBottom: isAiSummarizePage ? "none" : "1px solid var(--MainNav-divider)",
 						display: "flex",
 						flex: "1 1 auto",
 						minHeight: "var(--MainNav-height)",
 						px: { xs: 2, lg: 3 },
 						py: 1,
+						alignItems: 'center',
+						justifyContent: 'center',
 					}}
 				>
 					<IconButton
 						onClick={(): void => {
 							setOpenNav(true);
 						}}
-						sx={{ display: { lg: "none" } }}
+						sx={{ display: { lg: "none" }, position: 'absolute', left: { xs: 2, lg: 3 } }}
 					>
 						<ListIcon />
 					</IconButton>
+					{isFilesPage && (
+						<Box sx={{ width: '50%' }}>
+							<SearchBar />
+						</Box>
+					)}
 				</Box>
+				<Box
+					sx={{
+						borderBottom: isAiSummarizePage ? "none" : "1px solid var(--MainNav-divider)",
+						height: 1,
+					}}
+				/>
 			</Box>
 			<MobileNav
 				items={items}
