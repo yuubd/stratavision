@@ -1,12 +1,15 @@
+"use client";
+
 import * as React from "react";
-import RouterLink from "next/link";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { User } from "@phosphor-icons/react/dist/ssr/User";
-import { paths } from "@/paths";
+import { useLoginModal } from "@/components/auth/login-modal-provider";
 
 export function Login(): React.JSX.Element {
+  const { openLoginModal } = useLoginModal();
+
   return (
     <Box 
       sx={{ 
@@ -16,7 +19,16 @@ export function Login(): React.JSX.Element {
         borderColor: 'var(--NavItem-children-border)'
       }}
     >
-      <RouterLink href={paths.auth.login} style={{ textDecoration: 'none' }}>
+      <Box
+        onClick={openLoginModal}
+        sx={{ 
+          cursor: 'pointer',
+          textDecoration: 'none',
+          '&:hover': {
+            backgroundColor: 'var(--NavItem-hover-background)',
+          }
+        }}
+      >
         <Stack
           direction="row"
           spacing={2}
@@ -24,11 +36,9 @@ export function Login(): React.JSX.Element {
             alignItems: 'center',
             borderRadius: 1,
             color: 'var(--NavItem-color)',
-            cursor: 'pointer',
             px: 2,
             py: 1.5,
             '&:hover': {
-              backgroundColor: 'var(--NavItem-hover-background)',
               color: 'var(--NavItem-hover-color)'
             }
           }}
@@ -49,7 +59,7 @@ export function Login(): React.JSX.Element {
             Log in
           </Typography>
         </Stack>
-      </RouterLink>
+      </Box>
     </Box>
   );
 } 

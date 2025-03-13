@@ -15,6 +15,7 @@ import { SettingsButton } from "@/components/core/settings/settings-button";
 import { SettingsProvider } from "@/components/core/settings/settings-context";
 import { ThemeProvider } from "@/components/core/theme-provider";
 import { Toaster } from "@/components/core/toaster";
+import { Providers } from "@/components/auth/providers";
 
 export const metadata = { title: appConfig.name } satisfies Metadata;
 
@@ -39,25 +40,27 @@ export default async function Layout({ children }: LayoutProps): Promise<React.J
 		<html dir={direction} lang={language} suppressHydrationWarning>
 			<body>
 				<InitColorSchemeScript attribute="class" />
-				<AuthProvider>
-					<Analytics>
-						<LocalizationProvider>
-							<SettingsProvider settings={settings}>
-								<I18nProvider lng={language}>
-									<EmotionCacheProvider options={{ key: "mui" }}>
-										<Rtl direction={direction}>
-											<ThemeProvider>
-												{children}
-												<SettingsButton />
-												<Toaster position="bottom-right" />
-											</ThemeProvider>
-										</Rtl>
-									</EmotionCacheProvider>
-								</I18nProvider>
-							</SettingsProvider>
-						</LocalizationProvider>
-					</Analytics>
-				</AuthProvider>
+				<Providers>
+					<AuthProvider>
+						<Analytics>
+							<LocalizationProvider>
+								<SettingsProvider settings={settings}>
+									<I18nProvider lng={language}>
+										<EmotionCacheProvider options={{ key: "mui" }}>
+											<Rtl direction={direction}>
+												<ThemeProvider>
+													{children}
+													<SettingsButton />
+													<Toaster position="bottom-right" />
+												</ThemeProvider>
+											</Rtl>
+										</EmotionCacheProvider>
+									</I18nProvider>
+								</SettingsProvider>
+							</LocalizationProvider>
+						</Analytics>
+					</AuthProvider>
+				</Providers>
 			</body>
 		</html>
 	);

@@ -86,7 +86,7 @@ export function FilesTable({ onStartUploading }: FilesTableProps): React.JSX.Ele
 									variant="h6"
 									sx={{ color: 'var(--mui-palette-text-primary)', fontWeight: 500 }}
 								>
-									No files detected
+									No files/summaries are saved yet
 								</Typography>
 								<Typography
 									variant="body2"
