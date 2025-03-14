@@ -1,13 +1,15 @@
 "use client";
 
-import type * as React from "react";
-import Avatar from "@mui/material/Avatar";
+import * as React from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { Plus as PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
-import type { DropzoneOptions, FileWithPath } from "react-dropzone";
+import Avatar from "@mui/material/Avatar";
 import { useDropzone } from "react-dropzone";
+import { Plus as PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
+import { ProgressIndicator } from "./progress-indicator";
+import { DocumentSummary } from "./document-summary";
+import type { DropzoneOptions, FileWithPath } from "react-dropzone";
 
 export type File = FileWithPath;
 
@@ -18,7 +20,29 @@ export interface FileDropzoneProps extends DropzoneOptions {
 }
 
 export function FileDropzone({ title, description, subtitle, ...props }: FileDropzoneProps): React.JSX.Element {
-	const { getRootProps, getInputProps, isDragActive } = useDropzone(props);
+	const [isUploading, setIsUploading] = React.useState(false);
+	const [isAnalyzed, setIsAnalyzed] = React.useState(false);
+	const { getRootProps, getInputProps, isDragActive } = useDropzone({
+		...props,
+		onDrop: async (acceptedFiles, rejectedFiles, event) => {
+			setIsUploading(true);
+			// Simulate 2 second processing time
+			setTimeout(() => {
+				setIsUploading(false);
+				setIsAnalyzed(true);
+			}, 2000);
+			// Call the original onDrop if provided
+			props.onDrop?.(acceptedFiles, rejectedFiles, event);
+		},
+	});
+
+	if (isAnalyzed) {
+		return <DocumentSummary />;
+	}
+
+	if (isUploading) {
+		return <ProgressIndicator />;
+	}
 
 	return (
 		<Box
