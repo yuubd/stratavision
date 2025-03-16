@@ -17,9 +17,10 @@ export interface FileDropzoneProps extends DropzoneOptions {
 	title: string;
 	description: string;
 	subtitle: string;
+	onAnswerSelect?: (answer: string) => void;
 }
 
-export function FileDropzone({ title, description, subtitle, ...props }: FileDropzoneProps): React.JSX.Element {
+export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...props }: FileDropzoneProps): React.JSX.Element {
 	const [isUploading, setIsUploading] = React.useState(false);
 	const [isAnalyzed, setIsAnalyzed] = React.useState(false);
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -37,7 +38,7 @@ export function FileDropzone({ title, description, subtitle, ...props }: FileDro
 	});
 
 	if (isAnalyzed) {
-		return <DocumentSummary />;
+		return <DocumentSummary onAnswerSelect={onAnswerSelect} />;
 	}
 
 	if (isUploading) {
@@ -71,39 +72,27 @@ export function FileDropzone({ title, description, subtitle, ...props }: FileDro
 			{...getRootProps()}
 		>
 			<input {...getInputProps()} />
-			<Stack spacing={3} alignItems="center">
-				<Typography
-					variant="h4"
-					sx={{
-						fontSize: "1.75rem",
-						fontWeight: 600,
-						textAlign: "center",
-					}}
-				>
-					{title}
-				</Typography>
+			<Stack spacing={2} alignItems="center">
 				<Avatar
 					sx={{
-						"--Avatar-size": "40px",
 						bgcolor: "var(--mui-palette-background-paper)",
 						boxShadow: "var(--mui-shadows-8)",
 						color: "var(--mui-palette-text-primary)",
+						height: 56,
+						width: 56,
 					}}
 				>
-					<PlusIcon weight="bold" />
+					<PlusIcon fontSize="var(--icon-fontSize-xl)" />
 				</Avatar>
-				<Stack spacing={0.5} sx={{ textAlign: "center" }}>
-					<Typography variant="body1" sx={{ fontWeight: 500 }}>
-						{description}
-					</Typography>
-					<Typography 
-						color="text.secondary" 
-						variant="body2"
-						sx={{ whiteSpace: "pre-line" }}
-					>
-						{subtitle}
-					</Typography>
-				</Stack>
+				<Typography variant="h6" align="center">
+					{title}
+				</Typography>
+				<Typography variant="body2" align="center" color="text.secondary">
+					{description}
+				</Typography>
+				<Typography variant="body2" align="center" color="text.secondary" sx={{ whiteSpace: "pre-line" }}>
+					{subtitle}
+				</Typography>
 			</Stack>
 		</Box>
 	);

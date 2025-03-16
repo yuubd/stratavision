@@ -14,9 +14,10 @@ import type { DocumentSummaryData } from "./types";
 
 export interface DocumentSummaryProps {
   data?: DocumentSummaryData;
+  onAnswerSelect?: (answer: string) => void;
 }
 
-export function DocumentSummary({ data = mockDocumentSummary }: DocumentSummaryProps): React.JSX.Element {
+export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: DocumentSummaryProps): React.JSX.Element {
   const [globalExpandState, setGlobalExpandState] = React.useState(true);
   const [lastToggleTime, setLastToggleTime] = React.useState(0);
 
@@ -78,6 +79,7 @@ export function DocumentSummary({ data = mockDocumentSummary }: DocumentSummaryP
                   key={index}
                   question={qa.question}
                   answer={qa.answer}
+                  onSelect={onAnswerSelect}
                 />
               ))}
             </SummarySection>

@@ -7,11 +7,21 @@ import Typography from "@mui/material/Typography";
 interface QuestionAnswerProps {
   question: string;
   answer: string;
+  onSelect?: (answer: string) => void;
 }
 
-export function QuestionAnswer({ question, answer }: QuestionAnswerProps): React.JSX.Element {
+export function QuestionAnswer({ question, answer, onSelect }: QuestionAnswerProps): React.JSX.Element {
   return (
-    <Box sx={{ mb: 2 }}>
+    <Box 
+      sx={{ 
+        mb: 2,
+        cursor: onSelect ? 'pointer' : 'default',
+        '&:hover': onSelect ? {
+          bgcolor: 'action.hover',
+        } : {},
+      }}
+      onClick={() => onSelect?.(answer)}
+    >
       <Typography
         variant="subtitle1"
         sx={{
