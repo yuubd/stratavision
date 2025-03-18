@@ -27,33 +27,46 @@ export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: 
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3, pt: 0 }}>
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <Box>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            Summary
-          </Typography>
-          <Typography variant="h4">
-            {data.strataNumber}
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button
-            variant="outlined"
-            startIcon={globalExpandState ? <CollapseIcon /> : <ExpandIcon />}
-            onClick={handleGlobalToggle}
-            sx={{ borderRadius: 24 }}
-          >
-            {globalExpandState ? "Collapse All" : "Expand All"}
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<SaveIcon />}
-            sx={{ borderRadius: 24 }}
-          >
-            Save AI Summary
-          </Button>
+      <Box sx={{ 
+        position: "sticky",
+        top: 0,
+        bgcolor: "background.paper",
+        borderBottom: 1,
+        borderColor: "divider",
+        zIndex: 1100,
+        mb: 3,
+        mx: -3,
+        px: { xs: 6, lg: 3 },
+        py: 2,
+      }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              Summary
+            </Typography>
+            <Typography variant="h4">
+              {data.strataNumber}
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button
+              variant="outlined"
+              startIcon={globalExpandState ? <CollapseIcon /> : <ExpandIcon />}
+              onClick={handleGlobalToggle}
+              sx={{ borderRadius: 24 }}
+            >
+              {globalExpandState ? "Collapse All" : "Expand All"}
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<SaveIcon />}
+              sx={{ borderRadius: 24 }}
+            >
+              Save AI Summary
+            </Button>
+          </Box>
         </Box>
       </Box>
 

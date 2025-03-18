@@ -78,7 +78,7 @@ export function MainNav({ items }: MainNavProps): React.JSX.Element {
 		<React.Fragment>
 			<IconButton
 				onClick={(): void => setOpenNav(true)}
-				sx={{ display: { lg: "none" }, position: 'absolute', left: { xs: 2, lg: 3 } }}
+				sx={{ display: { lg: "none" }, position: 'absolute', left: { xs: 2, lg: 3 }, zIndex: 1200 }}
 			>
 				<ListIcon />
 			</IconButton>
