@@ -20,7 +20,7 @@ export function MainNav({ items }: MainNavProps): React.JSX.Element {
 	const isAiSummarizePage = pathname === "/dashboard/ai-summarize";
 	const isFilesPage = pathname === "/dashboard/files";
 
-	return (
+	return isFilesPage ? (
 		<React.Fragment>
 			<Box
 				component="header"
@@ -55,11 +55,9 @@ export function MainNav({ items }: MainNavProps): React.JSX.Element {
 					>
 						<ListIcon />
 					</IconButton>
-					{isFilesPage && (
-						<Box sx={{ width: '50%' }}>
-							<SearchBar />
-						</Box>
-					)}
+					<Box sx={{ width: '50%' }}>
+						<SearchBar />
+					</Box>
 				</Box>
 				<Box
 					sx={{
@@ -74,6 +72,20 @@ export function MainNav({ items }: MainNavProps): React.JSX.Element {
 					setOpenNav(false);
 				}}
 				open={openNav}
+			/>
+		</React.Fragment>
+	) : (
+		<React.Fragment>
+			<IconButton
+				onClick={(): void => setOpenNav(true)}
+				sx={{ display: { lg: "none" }, position: 'absolute', left: { xs: 2, lg: 3 } }}
+			>
+				<ListIcon />
+			</IconButton>
+			<MobileNav 
+				items={items} 
+				onClose={() => setOpenNav(false)} 
+				open={openNav} 
 			/>
 		</React.Fragment>
 	);
