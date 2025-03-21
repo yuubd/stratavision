@@ -11,6 +11,7 @@ import { CaretDown as ExpandIcon } from "@phosphor-icons/react/dist/ssr/CaretDow
 import { CaretUp as CollapseIcon } from "@phosphor-icons/react/dist/ssr/CaretUp";
 import { mockDocumentSummary } from "./mock-data";
 import type { DocumentSummaryData } from "./types";
+import { PDFViewer } from "./pdf-viewer";
 
 export interface DocumentSummaryProps {
   data?: DocumentSummaryData;
@@ -20,15 +21,21 @@ export interface DocumentSummaryProps {
 export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: DocumentSummaryProps): React.JSX.Element {
   const [globalExpandState, setGlobalExpandState] = React.useState(true);
   const [lastToggleTime, setLastToggleTime] = React.useState(0);
+  const [selectedAnswer, setSelectedAnswer] = React.useState<string | null>(null);
 
   const handleGlobalToggle = () => {
     setGlobalExpandState(!globalExpandState);
     setLastToggleTime(Date.now());
   };
 
+  const handleAnswerSelect = (answer: string) => {
+    setSelectedAnswer(answer);
+    onAnswerSelect?.(answer);
+  };
+
   return (
-    <Box sx={{ p: 3, pt: 0 }}>
-      {/* Header */}
+    <Box>
+      {/* Header - Always Full Width */}
       <Box sx={{ 
         position: "sticky",
         top: 0,
@@ -36,8 +43,6 @@ export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: 
         borderBottom: 1,
         borderColor: "divider",
         zIndex: 1100,
-        mb: 3,
-        mx: -3,
         px: { xs: 6, lg: 3 },
         py: 2,
       }}>
@@ -70,35 +75,60 @@ export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: 
         </Box>
       </Box>
 
-      {/* Sections */}
-      {data.sections.map((section) => (
-        <SummarySection 
-          key={section.title} 
-          title={section.title}
-          defaultExpanded={globalExpandState}
-          globalExpandState={globalExpandState}
-          lastToggleTime={lastToggleTime}
-        >
-          {section.subsections.map((subsection) => (
+      {/* Content Area - Splits into Two */}
+      <Box sx={{ 
+        display: 'flex',
+        position: 'relative',
+      }}>
+        {/* Summary Content */}
+        <Box sx={{ 
+          width: selectedAnswer ? "50%" : "100%",
+          transition: "width 0.3s ease",
+          p: 3,
+        }}>
+          {/* Sections */}
+          {data.sections.map((section) => (
             <SummarySection 
-              key={subsection.title} 
-              title={subsection.title}
+              key={section.title} 
+              title={section.title}
               defaultExpanded={globalExpandState}
               globalExpandState={globalExpandState}
               lastToggleTime={lastToggleTime}
             >
-              {subsection.questions.map((qa, index) => (
-                <QuestionAnswer
-                  key={index}
-                  question={qa.question}
-                  answer={qa.answer}
-                  onSelect={onAnswerSelect}
-                />
+              {section.subsections.map((subsection) => (
+                <SummarySection 
+                  key={subsection.title} 
+                  title={subsection.title}
+                  defaultExpanded={globalExpandState}
+                  globalExpandState={globalExpandState}
+                  lastToggleTime={lastToggleTime}
+                >
+                  {subsection.questions.map((qa, index) => (
+                    <QuestionAnswer
+                      key={index}
+                      question={qa.question}
+                      answer={qa.answer}
+                      onSelect={handleAnswerSelect}
+                    />
+                  ))}
+                </SummarySection>
               ))}
             </SummarySection>
           ))}
-        </SummarySection>
-      ))}
+        </Box>
+
+        {/* PDF Viewer */}
+        {selectedAnswer && (
+          <Box sx={{ 
+            width: "50%",
+            position: "sticky",
+            top: 0,
+            height: "calc(100vh - 64px)",
+          }}>
+            <PDFViewer pdfUrl="/assets/EPS5144_W1_Bylaws.pdf" />
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 }
