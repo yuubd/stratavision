@@ -38,13 +38,23 @@ export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: 
       {/* Header - Always Full Width */}
       <Box sx={{ 
         position: "sticky",
-        top: 0,
+        top: 1,
         bgcolor: "background.paper",
         borderBottom: 1,
         borderColor: "divider",
         zIndex: 1100,
         px: { xs: 6, lg: 3 },
         py: 2,
+        "::before": {
+          content: '""',
+          position: "absolute",
+          top: -500, // Extends background upward
+          left: 0,
+          width: "100%",
+          height: 500, // Fills the gap
+          bgcolor: "background.paper",
+          zIndex: -1,
+        }
       }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box>
@@ -79,6 +89,7 @@ export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: 
       <Box sx={{ 
         display: 'flex',
         position: 'relative',
+        minHeight: 'calc(100vh - 73px)',
       }}>
         {/* Summary Content */}
         <Box sx={{ 
@@ -121,9 +132,12 @@ export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: 
         {selectedAnswer && (
           <Box sx={{ 
             width: "50%",
+            height: "calc(100vh - 100px)",
             position: "sticky",
-            top: 0,
-            height: "calc(100vh - 64px)",
+            top: 100,
+            right: 0,
+            bottom: 0,
+            overflow: "hidden",
           }}>
             <PDFViewer pdfUrl="/assets/EPS5144_W1_Bylaws.pdf" />
           </Box>
