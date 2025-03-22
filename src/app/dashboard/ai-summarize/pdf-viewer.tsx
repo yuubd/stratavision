@@ -20,6 +20,8 @@ export function PDFViewer({ pdfUrl }: PDFViewerProps): React.JSX.Element {
   const [numPages, setNumPages] = React.useState<number | null>(null);
   const [scale, setScale] = React.useState(1.2);
   const [error, setError] = React.useState<string | null>(null);
+  const [isZooming, setIsZooming] = React.useState(false);
+  const zoomTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>(null!);
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
     setNumPages(numPages);
@@ -31,13 +33,35 @@ export function PDFViewer({ pdfUrl }: PDFViewerProps): React.JSX.Element {
     setError(error.message);
   }
 
+  const debouncedSetScale = React.useCallback((newScale: number) => {
+    if (zoomTimeoutRef.current) {
+      clearTimeout(zoomTimeoutRef.current);
+    }
+    setScale(newScale);
+    setIsZooming(true);
+    
+    zoomTimeoutRef.current = setTimeout(() => {
+      setIsZooming(false);
+    }, 150);
+  }, []);
+
   const handleZoomIn = () => {
-    setScale((prev) => Math.min(prev + 0.2, 2.5));
+    const newScale = Math.min(scale + 0.2, 2.5);
+    debouncedSetScale(newScale);
   };
 
   const handleZoomOut = () => {
-    setScale((prev) => Math.max(prev - 0.2, 0.8));
+    const newScale = Math.max(scale - 0.2, 0.8);
+    debouncedSetScale(newScale);
   };
+
+  React.useEffect(() => {
+    return () => {
+      if (zoomTimeoutRef.current) {
+        clearTimeout(zoomTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <Box
@@ -49,40 +73,44 @@ export function PDFViewer({ pdfUrl }: PDFViewerProps): React.JSX.Element {
         borderColor: "divider",
         display: "flex",
         flexDirection: "column",
+        position: "relative",
       }}
     >
-      {/* Controls */}
+      {/* Floating Controls */}
       <Box
         sx={{
           position: "absolute",
-          top: 0,
-          right: 0,
-          left: 0,
-          zIndex: 1,
+          top: 16,
+          right: 16,
+          zIndex: 5,
           display: "flex",
-          justifyContent: "flex-end",
-          alignItems: "center",
-          p: 1,
-          borderBottom: 1,
-          borderColor: "divider",
+          gap: 1,
           bgcolor: "background.paper",
+          borderRadius: 1,
+          p: 0.5,
+          boxShadow: 1,
         }}
       >
-        <Box sx={{ display: "flex", gap: 1 }}>
-          <IconButton onClick={handleZoomOut} size="small" disabled={!numPages}>
-            <ZoomOutIcon />
-          </IconButton>
-          <IconButton onClick={handleZoomIn} size="small" disabled={!numPages}>
-            <ZoomInIcon />
-          </IconButton>
-        </Box>
+        <IconButton 
+          onClick={handleZoomOut} 
+          size="small" 
+          disabled={scale <= 0.8 || isZooming}
+        >
+          <ZoomOutIcon />
+        </IconButton>
+        <IconButton 
+          onClick={handleZoomIn} 
+          size="small" 
+          disabled={scale >= 2.5 || isZooming}
+        >
+          <ZoomInIcon />
+        </IconButton>
       </Box>
 
       {/* PDF Container */}
       <Box
         sx={{
           flex: 1,
-          mt: "48px", // Height of controls
           overflow: "auto",
           display: "flex",
           flexDirection: "column",
@@ -130,8 +158,8 @@ export function PDFViewer({ pdfUrl }: PDFViewerProps): React.JSX.Element {
               pageNumber={index + 1}
               scale={scale}
               loading={null}
-              renderTextLayer={true}
-              renderAnnotationLayer={true}
+              renderTextLayer={!isZooming}
+              renderAnnotationLayer={!isZooming}
             />
           ))}
         </Document>
