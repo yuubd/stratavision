@@ -23,7 +23,6 @@ export async function getFiles(): Promise<FileData[]> {
 }
 
 export interface SaveSummaryRequest {
-  summary: string;
   pdfPath: string;
   fileName: string;
 }

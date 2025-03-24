@@ -46,12 +46,10 @@ export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: 
   };
 
   const handleSave = async () => {
-    if (!selectedAnswer) return;
     
     setIsSaving(true);
     try {
       await saveSummary({
-        summary: selectedAnswer,
         pdfPath: '/assets/EPS5144_W1_By.pdf',
         fileName: 'EPS5144_W1_By.pdf'
       });
