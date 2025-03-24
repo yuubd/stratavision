@@ -112,7 +112,6 @@ export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: 
               startIcon={<SaveIcon />}
               sx={{ borderRadius: 24 }}
               onClick={handleSave}
-              disabled={!selectedAnswer || isSaving}
             >
               {isSaving ? 'Saving...' : 'Save AI Summary'}
             </Button>
