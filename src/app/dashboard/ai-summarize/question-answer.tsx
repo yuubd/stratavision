@@ -8,37 +8,30 @@ interface QuestionAnswerProps {
   question: string;
   answer: string;
   onSelect?: (answer: string) => void;
+  selected?: boolean;
 }
 
-export function QuestionAnswer({ question, answer, onSelect }: QuestionAnswerProps): React.JSX.Element {
+export function QuestionAnswer({ question, answer, onSelect, selected }: QuestionAnswerProps): React.JSX.Element {
+  const handleClick = () => {
+    onSelect?.(answer);
+  };
+
   return (
     <Box 
-      sx={{ 
-        mb: 2,
+      sx={{
+        p: 1, 
         cursor: onSelect ? 'pointer' : 'default',
         '&:hover': onSelect ? {
           bgcolor: 'action.hover',
         } : {},
+        bgcolor: selected ? 'action.selected' : 'transparent',
       }}
-      onClick={() => onSelect?.(answer)}
+      onClick={handleClick}
     >
-      <Typography
-        variant="subtitle1"
-        sx={{
-          fontWeight: 600,
-          color: "var(--mui-palette-text-primary)",
-          mb: 0.5,
-        }}
-      >
+      <Typography variant="subtitle1" gutterBottom>
         {question}
       </Typography>
-      <Typography
-        variant="body2"
-        sx={{
-          color: "var(--mui-palette-text-secondary)",
-          pl: 2,
-        }}
-      >
+      <Typography variant="body1" color="text.secondary">
         {answer}
       </Typography>
     </Box>

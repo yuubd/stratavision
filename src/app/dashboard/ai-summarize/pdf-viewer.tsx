@@ -130,6 +130,7 @@ export function PDFViewer({ pdfUrl }: PDFViewerProps): React.JSX.Element {
             width: "100%",
             display: "flex",
             justifyContent: "center",
+            position: "relative",
           },
           "& .react-pdf__Page__canvas": {
             maxWidth: "auto",

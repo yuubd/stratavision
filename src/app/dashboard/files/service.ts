@@ -8,16 +8,39 @@ export interface FileData {
 }
 
 export async function getFiles(): Promise<FileData[]> {
-//   const response = await fetch('/api/files', {
-//     method: 'GET',
-//     headers: {
-//       'Content-Type': 'application/json',
-//     },
-//   });
+    const response = await fetch('/api/files', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 
-//   if (!response.ok) {
-//     throw new Error('Failed to fetch files');
-//   }
-  const response = JSON.parse("[]");
+  if (!response.ok) {
+    throw new Error('Failed to fetch files');
+  }
+  // const response = JSON.parse("[]");
+  return response.json();
+}
+
+export interface SaveSummaryRequest {
+  summary: string;
+  pdfPath: string;
+  fileName: string;
+}
+
+export async function saveSummary(data: SaveSummaryRequest): Promise<FileData> {
+  const response = await fetch('/api/files/save-summary', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to save summary');
+  }
+
+
   return response.json();
 }

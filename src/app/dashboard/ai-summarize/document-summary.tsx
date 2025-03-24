@@ -12,16 +12,21 @@ import { CaretUp as CollapseIcon } from "@phosphor-icons/react/dist/ssr/CaretUp"
 import { mockDocumentSummary } from "./mock-data";
 import type { DocumentSummaryData } from "./types";
 import { PDFViewer } from "./pdf-viewer";
+import { saveSummary } from "../files/service";
+import { useRouter } from "next/navigation";
+import { paths } from "@/paths";
 
 export interface DocumentSummaryProps {
   data?: DocumentSummaryData;
-  onAnswerSelect?: (answer: string) => void;
+  onAnswerSelect?: (answer: string | null) => void;
 }
 
 export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: DocumentSummaryProps): React.JSX.Element {
   const [globalExpandState, setGlobalExpandState] = React.useState(true);
   const [lastToggleTime, setLastToggleTime] = React.useState(0);
   const [selectedAnswer, setSelectedAnswer] = React.useState<string | null>(null);
+  const [isSaving, setIsSaving] = React.useState(false);
+  const router = useRouter();
 
   const handleGlobalToggle = () => {
     setGlobalExpandState(!globalExpandState);
@@ -29,8 +34,36 @@ export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: 
   };
 
   const handleAnswerSelect = (answer: string) => {
-    setSelectedAnswer(answer);
-    onAnswerSelect?.(answer);
+    if (selectedAnswer === answer) {
+      // If clicking the same answer, deselect it
+      setSelectedAnswer(null);
+      onAnswerSelect?.(null);
+    } else {
+      // If clicking a different answer, select it
+      setSelectedAnswer(answer);
+      onAnswerSelect?.(answer);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!selectedAnswer) return;
+    
+    setIsSaving(true);
+    try {
+      await saveSummary({
+        summary: selectedAnswer,
+        pdfPath: '/assets/EPS5144_W1_By.pdf',
+        fileName: 'EPS5144_W1_By.pdf'
+      });
+      
+      // Navigate to files tab after successful save
+      router.push(paths.dashboard.files);
+    } catch (error) {
+      console.error('Failed to save summary:', error);
+      // You might want to show an error message to the user here
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -48,10 +81,10 @@ export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: 
         "::before": {
           content: '""',
           position: "absolute",
-          top: -500, // Extends background upward
+          top: -500,
           left: 0,
           width: "100%",
-          height: 500, // Fills the gap
+          height: 500,
           bgcolor: "background.paper",
           zIndex: -1,
         }
@@ -78,8 +111,10 @@ export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: 
               variant="contained"
               startIcon={<SaveIcon />}
               sx={{ borderRadius: 24 }}
+              onClick={handleSave}
+              disabled={!selectedAnswer || isSaving}
             >
-              Save AI Summary
+              {isSaving ? 'Saving...' : 'Save AI Summary'}
             </Button>
           </Box>
         </Box>
@@ -120,6 +155,7 @@ export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: 
                       question={qa.question}
                       answer={qa.answer}
                       onSelect={handleAnswerSelect}
+                      selected={selectedAnswer === qa.answer}
                     />
                   ))}
                 </SummarySection>
