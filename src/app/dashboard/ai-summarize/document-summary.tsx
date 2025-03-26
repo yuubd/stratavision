@@ -50,8 +50,10 @@ export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: 
     setIsSaving(true);
     try {
       await saveSummary({
+        summary: 'test',
         pdfPath: '/assets/EPS5144_W1_By.pdf',
-        fileName: 'EPS5144_W1_By.pdf'
+        fileName: 'EPS5144_W1_By.pdf',
+        strataNumber: 'EPS5144'
       });
       
       // Navigate to files tab after successful save

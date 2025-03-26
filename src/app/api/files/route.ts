@@ -9,14 +9,30 @@ export async function GET() {
     
     // For now, we'll return a mock response
     const files: FileData[] = [
-      // {
-      //   id: '1',
-      //   name: 'EPS5144_W1_By.pdf',
-      //   uploadedAt: new Date().toISOString(),
-      //   size: 1024 * 1024,
-      //   status: 'processed',
-      //   type: 'application/pdf'
-      // }
+      {
+        id: '1',
+        title: 'EPS5144_W1_By.pdf',
+        strataNumber: 'EPS5144',
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: '2',
+        title: 'EPS3296_W2_By.pdf',
+        strataNumber: 'EPS3296',
+        createdAt: new Date(Date.now() - 86400000).toISOString()
+      },
+      {
+        id: '3',
+        title: 'EPS3296_W3_By.pdf',
+        strataNumber: 'EPS3296',
+        createdAt: new Date(Date.now() - 86400000).toISOString()
+      },
+      {
+        id: '4',
+        title: 'EPS3296_W3_By.pdf',
+        strataNumber: 'EPS3296',
+        createdAt: new Date(Date.now() - 86400000).toISOString()
+      }
     ];
 
     return NextResponse.json(files);

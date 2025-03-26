@@ -1,13 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-
 import { useEffect, useState } from "react";
-import { Box, Typography, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import { FileTable } from "./file-table";
 import { getFiles, type FileData } from "./service";
-import { FilesTable } from "./files-table";
-
 
 export default function FilesPage() {
 	const router = useRouter();
@@ -16,38 +13,38 @@ export default function FilesPage() {
 	const [error, setError] = useState<string | null>(null);
 
 	const handleStartUploading = () => {
-        router.push('/dashboard/ai-summarize');
-    };
-	useEffect(() => {
-		const fetchFiles = async () => {
-			try {
-				const data = await getFiles();
-				setFiles(data);
-				setError(null);
-			} catch (err) {
-				setError("Failed to fetch files. Please try again later.");
-			} finally {
-				setLoading(false);
-			}
-		};
+		router.push('/dashboard/ai-summarize');
+	};
 
+	const fetchFiles = async () => {
+		try {
+			setLoading(true);
+			const data = await getFiles();
+			setFiles(data);
+			setError(null);
+		} catch (err) {
+			setError("Failed to fetch files. Please try again later.");
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	useEffect(() => {
 		fetchFiles();
 	}, []);
 
-	if (loading) {
+	const handleDelete = (id: string) => {
+		setFiles(files.filter(file => file.id !== id));
+	};
+
+	if (loading && files.length === 0) {
 		return (
 			<Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
 				<CircularProgress />
 			</Box>
 		);
 	}
-	if (files.length === 0) {
-		return (
-			<Box sx={{ p: 3 }}>
-				<FilesTable onStartUploading={handleStartUploading} />
-			</Box>
-		);
-	}
+
 	if (error) {
 		return (
 			<Box sx={{ p: 3 }}>
@@ -57,11 +54,18 @@ export default function FilesPage() {
 	}
 
 	return (
-		<Box sx={{ p: 3 }}>
-			<Typography variant="h4" gutterBottom>
-				Your Files
-			</Typography>
-			<FileTable files={files} />
+		<Box 
+			sx={{ 
+				height: '100%',
+				backgroundColor: '#1a1c2a'
+			}}
+		>
+			<FileTable 
+				files={files} 
+				onDelete={handleDelete} 
+				onStartUploading={handleStartUploading}
+				isEmpty={files.length === 0}
+			/>
 		</Box>
 	);
 }

@@ -1,10 +1,8 @@
 export interface FileData {
   id: string;
-  name: string;
-  uploadedAt: string;
-  size: number;
-  status: 'processed' | 'processing' | 'failed';
-  type: string;
+  title: string;
+  strataNumber: string;
+  createdAt: string;
 }
 
 export async function getFiles(): Promise<FileData[]> {
@@ -23,8 +21,10 @@ export async function getFiles(): Promise<FileData[]> {
 }
 
 export interface SaveSummaryRequest {
+  summary: string;
   pdfPath: string;
   fileName: string;
+  strataNumber: string;
 }
 
 export async function saveSummary(data: SaveSummaryRequest): Promise<FileData> {
@@ -42,4 +42,14 @@ export async function saveSummary(data: SaveSummaryRequest): Promise<FileData> {
 
 
   return response.json();
+}
+
+export async function deleteFile(id: string): Promise<void> {
+  const response = await fetch(`/api/files/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to delete file');
+  }
 }

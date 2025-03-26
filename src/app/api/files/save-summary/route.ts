@@ -13,11 +13,9 @@ export async function POST(request: Request) {
     // For now, we'll return a mock response
     const savedFile = {
       id: crypto.randomUUID(),
-      name: data.fileName,
-      uploadedAt: new Date().toISOString(),
-      size: 1024 * 1024, // Mock file size of 1MB
-      status: 'processed' as const,
-      type: 'application/pdf'
+      title: data.fileName,
+      strataNumber: data.strataNumber,
+      createdAt: new Date().toISOString()
     };
 
     return NextResponse.json(savedFile);
