@@ -17,21 +17,21 @@ export async function GET() {
       },
       {
         id: '2',
-        title: 'EPS3296_W2_By.pdf',
-        strataNumber: 'EPS3296',
-        createdAt: new Date(Date.now() - 86400000).toISOString()
+        title: 'EPS4296_W3_By.pdf',
+        strataNumber: 'EPS0326',
+        createdAt: new Date(Date.now() - 26400000).toISOString()
       },
       {
         id: '3',
-        title: 'EPS3296_W3_By.pdf',
-        strataNumber: 'EPS3296',
-        createdAt: new Date(Date.now() - 86400000).toISOString()
+        title: 'EPS2296_W3_By.pdf',
+        strataNumber: 'EPS3496',
+        createdAt: new Date(Date.now() - 16400000).toISOString()
       },
       {
         id: '4',
-        title: 'EPS3296_W3_By.pdf',
-        strataNumber: 'EPS3296',
-        createdAt: new Date(Date.now() - 86400000).toISOString()
+        title: 'EPS1296_W3_By.pdf',
+        strataNumber: 'EPS4096',
+        createdAt: new Date(Date.now() - 36400000).toISOString()
       }
     ];
 

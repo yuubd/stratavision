@@ -15,13 +15,22 @@ import Checkbox from "@mui/material/Checkbox";
 import { Trash as TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { Plus as PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { ChartBar as ChartBarIcon } from "@phosphor-icons/react/dist/ssr/ChartBar";
+import { CaretUp as CaretUpIcon } from "@phosphor-icons/react/dist/ssr/CaretUp";
+import { CaretDown as CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import type { FileData } from "./service";
 import { deleteFile } from "./service";
 
+type SortDirection = 'asc' | 'desc' | null;
+
+interface SortState {
+  column: keyof FileData | null;
+  direction: SortDirection;
+}
+
 const columns = [
-  { id: 'title', label: 'Title', width: '40%' },
-  { id: 'strataNumber', label: 'Strata #', width: '30%' },
-  { id: 'createdAt', label: 'Created at', width: '30%' },
+  { id: 'title' as keyof FileData, label: 'Title', width: '40%' },
+  { id: 'strataNumber' as keyof FileData, label: 'Strata #', width: '30%' },
+  { id: 'createdAt' as keyof FileData, label: 'Created at', width: '30%' },
 ];
 
 interface FileTableProps {
@@ -33,6 +42,10 @@ interface FileTableProps {
 
 export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }: FileTableProps) {
   const [selected, setSelected] = React.useState<string[]>([]);
+  const [sortState, setSortState] = React.useState<SortState>({
+    column: null,
+    direction: null
+  });
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -75,6 +88,48 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
     }
   };
 
+  const handleSort = (column: keyof FileData) => {
+    setSortState(prevState => {
+      if (prevState.column === column) {
+        // Toggle direction between asc and desc only
+        return { column, direction: prevState.direction === 'asc' ? 'desc' : 'asc' };
+      } else {
+        // New column, start with ascending
+        return { column, direction: 'asc' };
+      }
+    });
+  };
+
+  // Sort the files based on the current sort state
+  const sortedFiles = React.useMemo(() => {
+    if (!sortState.column || !sortState.direction) {
+      return files;
+    }
+
+    return [...files].sort((a, b) => {
+      const column = sortState.column as keyof FileData;
+      
+      // Handle date sorting specially
+      if (column === 'createdAt') {
+        const dateA = new Date(a[column]).getTime();
+        const dateB = new Date(b[column]).getTime();
+        return sortState.direction === 'asc' ? dateA - dateB : dateB - dateA;
+      }
+
+      // Regular string sorting
+      const valueA = a[column];
+      const valueB = b[column];
+      
+      if (typeof valueA === 'string' && typeof valueB === 'string') {
+        return sortState.direction === 'asc' 
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      }
+      
+      return 0;
+    });
+  }, [files, sortState]);
+
   return (
     <Box>
       {/* Actions toolbar */}
@@ -83,23 +138,25 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center', 
-          p: 2, 
+          py: 1,
+          px: 2,
           backgroundColor: 'background.paper',
-          borderBottom: '1px solid',
-          borderColor: 'divider'
+          borderBottom: 1,
+          borderColor: 'divider',
         }}>
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <Button
-              variant="text"
-              disabled={selected.length === 0}
-              startIcon={<TrashIcon />}
-              color="error"
-              onClick={handleDelete}
-            >
-              Delete
-            </Button>
-          </Box>
-          <Typography>
+          <Button
+            variant="text"
+            disabled={selected.length === 0}
+            startIcon={<TrashIcon />}
+            color="error"
+            onClick={handleDelete}
+            sx={{ 
+              opacity: selected.length === 0 ? 0.5 : 1,
+            }}
+          >
+            Delete
+          </Button>
+          <Typography color="text.secondary">
             {selected.length > 0 ? `${selected.length} selected` : ''}
           </Typography>
         </Box>
@@ -113,18 +170,18 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
       >
         <Table sx={{ 
           '& .MuiTableCell-root': { 
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+            borderBottom: 1,
+            borderColor: 'divider',
             borderRight: 'none',
             padding: '16px',
           },
           '& .MuiTableRow-root': {
-            backgroundColor: '#1a1c2a',
             '&:hover': {
-              backgroundColor: '#22253a',
+              backgroundColor: 'action.hover',
             },
           },
         }}>
-          <TableHead sx={{ backgroundColor: '#1a1c2a' }}>
+          <TableHead>
             <TableRow>
               <TableCell padding="checkbox" sx={{ width: '48px' }}>
                 {!isEmpty && (
@@ -132,12 +189,6 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
                     indeterminate={selected.length > 0 && selected.length < files.length}
                     checked={files.length > 0 && selected.length === files.length}
                     onChange={handleSelectAll}
-                    sx={{ 
-                      color: 'grey.500',
-                      '&.Mui-checked': {
-                        color: 'primary.main',
-                      },
-                    }}
                   />
                 )}
               </TableCell>
@@ -148,9 +199,33 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
                     width: column.width,
                     color: 'text.secondary',
                     fontWeight: 'medium',
+                    cursor: 'pointer',
+                    userSelect: 'none',
                   }}
+                  onClick={() => !isEmpty && handleSort(column.id)}
                 >
-                  {column.label}
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Box component="span">{column.label}</Box>
+                    <Box 
+                      component="span" 
+                      sx={{ 
+                        ml: 1, 
+                        width: 16, 
+                        height: 16, 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center' 
+                      }}
+                    >
+                      {sortState.column === column.id && (
+                        sortState.direction === 'asc' ? (
+                          <CaretUpIcon size={16} weight="bold" />
+                        ) : (
+                          <CaretDownIcon size={16} weight="bold" />
+                        )
+                      )}
+                    </Box>
+                  </Box>
                 </TableCell>
               ))}
             </TableRow>
@@ -177,7 +252,7 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
                         width: 48,
                         height: 48,
                         borderRadius: '50%',
-                        bgcolor: 'background.level1',
+                        bgcolor: 'action.hover',
                         mb: 1,
                       }}
                     >
@@ -207,7 +282,7 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
                 </TableCell>
               </TableRow>
             ) : (
-              files.map((file) => (
+              sortedFiles.map((file) => (
                 <TableRow
                   key={file.id}
                   sx={{ 
@@ -219,12 +294,6 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
                     <Checkbox
                       checked={selected.includes(file.id)}
                       onChange={() => handleSelectOne(file.id)}
-                      sx={{ 
-                        color: 'grey.500',
-                        '&.Mui-checked': {
-                          color: 'primary.main',
-                        },
-                      }}
                     />
                   </TableCell>
                   <TableCell>{file.title}</TableCell>
