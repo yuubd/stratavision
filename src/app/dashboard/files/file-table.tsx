@@ -12,11 +12,14 @@ import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import Checkbox from "@mui/material/Checkbox";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
 import { Trash as TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { Plus as PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { ChartBar as ChartBarIcon } from "@phosphor-icons/react/dist/ssr/ChartBar";
 import { CaretUp as CaretUpIcon } from "@phosphor-icons/react/dist/ssr/CaretUp";
 import { CaretDown as CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
+import { MagnifyingGlass as MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
 import type { FileData } from "./service";
 import { deleteFile } from "./service";
 
@@ -42,6 +45,7 @@ interface FileTableProps {
 
 export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }: FileTableProps) {
   const [selected, setSelected] = React.useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = React.useState<string>('');
   const [sortState, setSortState] = React.useState<SortState>({
     column: null,
     direction: null
@@ -82,7 +86,8 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
 
   const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      setSelected(files.map(file => file.id));
+      const filteredFiles = filteredSortedFiles.map(file => file.id);
+      setSelected(filteredFiles);
     } else {
       setSelected([]);
     }
@@ -100,13 +105,32 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
     });
   };
 
-  // Sort the files based on the current sort state
-  const sortedFiles = React.useMemo(() => {
-    if (!sortState.column || !sortState.direction) {
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  // First filter files based on search term
+  const filteredFiles = React.useMemo(() => {
+    if (!searchTerm.trim()) {
       return files;
     }
 
-    return [...files].sort((a, b) => {
+    const normalizedSearchTerm = searchTerm.toLowerCase().trim();
+    
+    return files.filter(file => {
+      const titleMatch = file.title?.toLowerCase().includes(normalizedSearchTerm);
+      const strataNumberMatch = file.strataNumber?.toLowerCase().includes(normalizedSearchTerm);
+      return titleMatch || strataNumberMatch;
+    });
+  }, [files, searchTerm]);
+
+  // Then sort the filtered files
+  const filteredSortedFiles = React.useMemo(() => {
+    if (!sortState.column || !sortState.direction) {
+      return filteredFiles;
+    }
+
+    return [...filteredFiles].sort((a, b) => {
       const column = sortState.column as keyof FileData;
       
       // Handle date sorting specially
@@ -128,37 +152,75 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
       
       return 0;
     });
-  }, [files, sortState]);
+  }, [filteredFiles, sortState]);
+
+  // Update selected items when filtering changes to prevent selecting filtered out items
+  React.useEffect(() => {
+    if (selected.length > 0) {
+      const filteredIds = filteredFiles.map(file => file.id);
+      const validSelected = selected.filter(id => filteredIds.includes(id));
+      if (validSelected.length !== selected.length) {
+        setSelected(validSelected);
+      }
+    }
+  }, [filteredFiles, selected]);
 
   return (
     <Box>
       {/* Actions toolbar */}
       {!isEmpty && (
-        <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          py: 1,
-          px: 2,
-          backgroundColor: 'background.paper',
-          borderBottom: 1,
-          borderColor: 'divider',
-        }}>
-          <Button
-            variant="text"
-            disabled={selected.length === 0}
-            startIcon={<TrashIcon />}
-            color="error"
-            onClick={handleDelete}
-            sx={{ 
-              opacity: selected.length === 0 ? 0.5 : 1,
-            }}
-          >
-            Delete
-          </Button>
-          <Typography color="text.secondary">
-            {selected.length > 0 ? `${selected.length} selected` : ''}
-          </Typography>
+        <Box>
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            py: 1,
+            px: 2,
+            backgroundColor: 'background.paper',
+            borderBottom: 1,
+            borderColor: 'divider',
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Button
+                variant="text"
+                disabled={selected.length === 0}
+                startIcon={<TrashIcon />}
+                color="error"
+                onClick={handleDelete}
+                sx={{ 
+                  opacity: selected.length === 0 ? 0.5 : 1,
+                }}
+              >
+                Delete
+              </Button>
+              
+              <Typography color="text.secondary">
+                {selected.length > 0 ? `${selected.length} selected` : ''}
+              </Typography>
+            </Box>
+            
+            <TextField
+              placeholder="Search files..."
+              variant="outlined"
+              size="small"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <MagnifyingGlassIcon size={20} />
+                  </InputAdornment>
+                ),
+                sx: { borderRadius: 4 }
+              }}
+              sx={{ 
+                width: '300px',
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 4,
+                }
+              }}
+            />
+          </Box>
         </Box>
       )}
 
@@ -186,8 +248,8 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
               <TableCell padding="checkbox" sx={{ width: '48px' }}>
                 {!isEmpty && (
                   <Checkbox
-                    indeterminate={selected.length > 0 && selected.length < files.length}
-                    checked={files.length > 0 && selected.length === files.length}
+                    indeterminate={selected.length > 0 && selected.length < filteredSortedFiles.length}
+                    checked={filteredSortedFiles.length > 0 && selected.length === filteredSortedFiles.length}
                     onChange={handleSelectAll}
                   />
                 )}
@@ -281,8 +343,36 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
                   </Box>
                 </TableCell>
               </TableRow>
+            ) : filteredSortedFiles.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={columns.length + 1} sx={{ border: 0 }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      py: 6,
+                      gap: 1,
+                    }}
+                  >
+                    <Typography
+                      variant="h6"
+                      sx={{ color: 'text.primary', fontWeight: 500 }}
+                    >
+                      No matching files found
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      Try adjusting your search term
+                    </Typography>
+                  </Box>
+                </TableCell>
+              </TableRow>
             ) : (
-              sortedFiles.map((file) => (
+              filteredSortedFiles.map((file) => (
                 <TableRow
                   key={file.id}
                   sx={{ 
