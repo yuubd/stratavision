@@ -8,7 +8,6 @@ import { usePathname } from "next/navigation";
 
 import type { NavItemConfig } from "@/types/nav";
 import { MobileNav } from "../mobile-nav";
-import { SearchBar } from "../../../../app/dashboard/files/search-bar";
 
 export interface MainNavProps {
 	items: NavItemConfig[];
@@ -36,29 +35,7 @@ export function MainNav({ items }: MainNavProps): React.JSX.Element {
 					zIndex: "var(--MainNav-zIndex)",
 				}}
 			>
-				<Box
-					sx={{
-						display: "flex",
-						flex: "1 1 auto",
-						minHeight: "var(--MainNav-height)",
-						px: { xs: 2, lg: 3 },
-						py: 1,
-						alignItems: 'center',
-						justifyContent: 'center',
-					}}
-				>
-					<IconButton
-						onClick={(): void => {
-							setOpenNav(true);
-						}}
-						sx={{ display: { lg: "none" }, position: 'absolute', left: { xs: 2, lg: 3 } }}
-					>
-						<ListIcon />
-					</IconButton>
-					<Box sx={{ width: '50%' }}>
-						<SearchBar />
-					</Box>
-				</Box>
+				
 				<Box
 					sx={{
 						borderBottom: isAiSummarizePage ? "none" : "1px solid var(--MainNav-divider)",
