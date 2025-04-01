@@ -10,18 +10,19 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
 import Checkbox from "@mui/material/Checkbox";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
+import Collapse from "@mui/material/Collapse";
 import { Trash as TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { Plus as PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { ChartBar as ChartBarIcon } from "@phosphor-icons/react/dist/ssr/ChartBar";
+import { MagnifyingGlass as MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
 import { CaretUp as CaretUpIcon } from "@phosphor-icons/react/dist/ssr/CaretUp";
 import { CaretDown as CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
-import { MagnifyingGlass as MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
 import type { FileData } from "./service";
 import { deleteFile } from "./service";
+import { ExpandedRowContent } from './expanded-row-content';
 
 type SortDirection = 'asc' | 'desc' | null;
 
@@ -46,6 +47,7 @@ interface FileTableProps {
 export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }: FileTableProps) {
   const [selected, setSelected] = React.useState<string[]>([]);
   const [searchTerm, setSearchTerm] = React.useState<string>('');
+  const [expandedRow, setExpandedRow] = React.useState<string | null>(null);
   const [sortState, setSortState] = React.useState<SortState>({
     column: null,
     direction: null
@@ -76,7 +78,10 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
     }
   };
 
-  const handleSelectOne = (id: string) => {
+  const handleSelectOne = (id: string, event: React.MouseEvent) => {
+    // Stop propagation to prevent row click from being triggered when checkbox is clicked
+    event.stopPropagation();
+    
     if (selected.includes(id)) {
       setSelected(selected.filter(item => item !== id));
     } else {
@@ -86,13 +91,16 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
 
   const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const filteredFiles = filteredSortedFiles.map(file => file.id);
-      setSelected(filteredFiles);
+      setSelected(filteredSortedFiles.map(file => file.id));
     } else {
       setSelected([]);
     }
   };
-
+  
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+  
   const handleSort = (column: keyof FileData) => {
     setSortState(prevState => {
       if (prevState.column === column) {
@@ -104,12 +112,8 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
       }
     });
   };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  // First filter files based on search term
+  
+  // Filter files based on search term
   const filteredFiles = React.useMemo(() => {
     if (!searchTerm.trim()) {
       return files;
@@ -123,7 +127,7 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
       return titleMatch || strataNumberMatch;
     });
   }, [files, searchTerm]);
-
+  
   // Then sort the filtered files
   const filteredSortedFiles = React.useMemo(() => {
     if (!sortState.column || !sortState.direction) {
@@ -154,73 +158,71 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
     });
   }, [filteredFiles, sortState]);
 
-  // Update selected items when filtering changes to prevent selecting filtered out items
+  const handleRowClick = (file: FileData) => {
+    // Toggle expanded row
+    setExpandedRow(prevExpandedRow => 
+      prevExpandedRow === file.id ? null : file.id
+    );
+  };
+  
+  // Close expanded row when search changes
   React.useEffect(() => {
-    if (selected.length > 0) {
-      const filteredIds = filteredFiles.map(file => file.id);
-      const validSelected = selected.filter(id => filteredIds.includes(id));
-      if (validSelected.length !== selected.length) {
-        setSelected(validSelected);
-      }
-    }
-  }, [filteredFiles, selected]);
+    setExpandedRow(null);
+  }, [searchTerm]);
 
   return (
     <Box>
       {/* Actions toolbar */}
       {!isEmpty && (
-        <Box>
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center', 
-            py: 1,
-            px: 2,
-            backgroundColor: 'background.paper',
-            borderBottom: 1,
-            borderColor: 'divider',
-          }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Button
-                variant="text"
-                disabled={selected.length === 0}
-                startIcon={<TrashIcon />}
-                color="error"
-                onClick={handleDelete}
-                sx={{ 
-                  opacity: selected.length === 0 ? 0.5 : 1,
-                }}
-              >
-                Delete
-              </Button>
-              
-              <Typography color="text.secondary">
-                {selected.length > 0 ? `${selected.length} selected` : ''}
-              </Typography>
-            </Box>
-            
-            <TextField
-              placeholder="Search files..."
-              variant="outlined"
-              size="small"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <MagnifyingGlassIcon size={20} />
-                  </InputAdornment>
-                ),
-                sx: { borderRadius: 4 }
-              }}
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          p: 2, 
+          backgroundColor: 'background.paper',
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Button
+              variant="text"
+              disabled={selected.length === 0}
+              startIcon={<TrashIcon />}
+              color="error"
+              onClick={handleDelete}
               sx={{ 
-                width: '300px',
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 4,
-                }
+                opacity: selected.length === 0 ? 0.5 : 1,
               }}
-            />
+            >
+              Delete
+            </Button>
+            
+            <Typography color="text.secondary">
+              {selected.length > 0 ? `${selected.length} selected` : ''}
+            </Typography>
           </Box>
+          
+          <TextField
+            placeholder="Search files..."
+            variant="outlined"
+            size="small"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <MagnifyingGlassIcon size={20} />
+                </InputAdornment>
+              ),
+              sx: { borderRadius: 4 }
+            }}
+            sx={{ 
+              width: '300px',
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 4,
+              }
+            }}
+          />
         </Box>
       )}
 
@@ -232,10 +234,11 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
       >
         <Table sx={{ 
           '& .MuiTableCell-root': { 
-            borderBottom: 1,
+            borderBottom: '1px solid',
             borderColor: 'divider',
             borderRight: 'none',
             padding: '16px',
+            borderBottomWidth: '0.5px',
           },
           '& .MuiTableRow-root': {
             '&:hover': {
@@ -372,24 +375,49 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
                 </TableCell>
               </TableRow>
             ) : (
-              filteredSortedFiles.map((file) => (
-                <TableRow
-                  key={file.id}
-                  sx={{ 
-                    '&:last-child td, &:last-child th': { border: 0 },
-                    bgcolor: selected.includes(file.id) ? 'action.selected' : 'inherit',
-                  }}
-                >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={selected.includes(file.id)}
-                      onChange={() => handleSelectOne(file.id)}
-                    />
-                  </TableCell>
-                  <TableCell>{file.title}</TableCell>
-                  <TableCell>{file.strataNumber}</TableCell>
-                  <TableCell>{formatDate(file.createdAt)}</TableCell>
-                </TableRow>
+              React.Fragment && filteredSortedFiles.map((file) => (
+                <React.Fragment key={file.id}>
+                  <TableRow
+                    onClick={() => handleRowClick(file)}
+                    sx={{ 
+                      '&:last-child td, &:last-child th': { border: expandedRow === file.id ? 0 : undefined },
+                      bgcolor: expandedRow === file.id ? 'primary.light' : selected.includes(file.id) ? 'action.selected' : 'inherit',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: expandedRow === file.id ? 'primary.light' : 'action.hover',
+                      },
+                    }}
+                  >
+                    <TableCell padding="checkbox" onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
+                        checked={selected.includes(file.id)}
+                        onChange={(e) => handleSelectOne(file.id, e as unknown as React.MouseEvent)}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Typography variant="body2">{file.title}</Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">{file.strataNumber}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">{formatDate(file.createdAt)}</Typography>
+                    </TableCell>
+                  </TableRow>
+                  {/* Expanded row content */}
+                  <TableRow sx={{ bgcolor: 'background.default' }}>
+                    <TableCell 
+                      style={{ padding: 0 }} 
+                      colSpan={columns.length + 1}
+                    >
+                      <Collapse in={expandedRow === file.id} timeout="auto" unmountOnExit>
+                        <ExpandedRowContent file={file} />
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
               ))
             )}
           </TableBody>

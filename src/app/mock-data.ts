@@ -1,4 +1,4 @@
-import type { DocumentSummaryData } from "./types";
+import type { DocumentSummaryData } from "./dashboard/ai-summarize/types";
 
 export const mockDocumentSummary: DocumentSummaryData = {
   strataNumber: "NW2378",

@@ -9,7 +9,7 @@ import { QuestionAnswer } from "./question-answer";
 import { FloppyDisk as SaveIcon } from "@phosphor-icons/react/dist/ssr/FloppyDisk";
 import { CaretDown as ExpandIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { CaretUp as CollapseIcon } from "@phosphor-icons/react/dist/ssr/CaretUp";
-import { mockDocumentSummary } from "./mock-data";
+import { mockDocumentSummary } from "@/app/mock-data";
 import type { DocumentSummaryData } from "./types";
 import { PDFViewer } from "./pdf-viewer";
 import { saveSummary } from "../files/service";
