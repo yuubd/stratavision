@@ -10,7 +10,7 @@ import type { FileData } from "./service";
 import { PDFViewer } from '../ai-summarize/pdf-viewer';
 import { SummarySection } from '../ai-summarize/summary-section';
 import { QuestionAnswer } from '../ai-summarize/question-answer';
-import type { DocumentSummaryData } from '../ai-summarize/types';
+import type { DocumentSummaryData, QuestionAnswer as QuestionAnswerType } from '../ai-summarize/types';
 import { CaretDown as ExpandIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { CaretUp as CollapseIcon } from "@phosphor-icons/react/dist/ssr/CaretUp";
 
@@ -25,10 +25,21 @@ export const ExpandedRowContent = ({ file }: ExpandedRowContentProps) => {
   const [loading, setLoading] = React.useState(true);
   const [globalExpandState, setGlobalExpandState] = React.useState(true);
   const [lastToggleTime, setLastToggleTime] = React.useState(0);
+  const [selectedQA, setSelectedQA] = React.useState<QuestionAnswerType | null>(null);
 
   const handleGlobalToggle = () => {
     setGlobalExpandState(!globalExpandState);
     setLastToggleTime(Date.now());
+  };
+
+  const handleQuestionSelect = (qa: QuestionAnswerType) => {
+    if (selectedQA && selectedQA.answer === qa.answer) {
+      // If selecting the same question, deselect it
+      setSelectedQA(null);
+    } else {
+      // Otherwise, select the new question
+      setSelectedQA(qa);
+    }
   };
 
   // Fetch the summary when the component mounts
@@ -107,7 +118,9 @@ export const ExpandedRowContent = ({ file }: ExpandedRowContentProps) => {
                             key={index}
                             question={qa.question}
                             answer={qa.answer}
-                            selected={false}
+                            location={qa.location}
+                            selected={selectedQA?.answer === qa.answer}
+                            onSelect={() => handleQuestionSelect(qa)}
                           />
                         ))}
                       </SummarySection>
@@ -131,7 +144,11 @@ export const ExpandedRowContent = ({ file }: ExpandedRowContentProps) => {
               borderRadius: 2,
             }}
           >
-            <PDFViewer pdfUrl={pdfUrl} />
+            <PDFViewer 
+              pdfUrl={pdfUrl} 
+              highlightedLocation={selectedQA?.location}
+              highlightText={selectedQA?.answer}
+            />
           </Paper>
         </Grid>
       </Grid>
