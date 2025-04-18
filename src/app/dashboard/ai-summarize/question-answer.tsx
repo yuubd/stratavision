@@ -4,6 +4,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
+import type { PageHighlightData } from "./types";
 
 interface QuestionAnswerProps {
   question: string;
@@ -11,9 +12,10 @@ interface QuestionAnswerProps {
   location?: string;
   onSelect?: (answer: string) => void;
   selected?: boolean;
+  highlightData?: PageHighlightData[];
 }
 
-export function QuestionAnswer({ question, answer, location, onSelect, selected }: QuestionAnswerProps): React.JSX.Element {
+export function QuestionAnswer({ question, answer, location, onSelect, selected, highlightData }: QuestionAnswerProps): React.JSX.Element {
   const handleClick = () => {
     onSelect?.(answer);
   };

@@ -1,10 +1,10 @@
-interface TextPosition {
+export interface TextPosition {
   text: string;
   startIndex: number;
   endIndex: number;
 }
 
-interface PageHighlightData {
+export interface PageHighlightData {
   pageNumber: number;
   textPositions: TextPosition[];
 }

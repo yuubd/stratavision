@@ -23,6 +23,10 @@ import { CaretDown as CaretDownIcon } from "@phosphor-icons/react/dist/ssr/Caret
 import type { FileData } from "./service";
 import { deleteFile } from "./service";
 import { ExpandedRowContent } from './expanded-row-content';
+import { IconButton } from "@mui/material";
+import { List as ListIcon } from "@phosphor-icons/react/dist/ssr/List";
+import { MobileNav } from "@/components/dashboard/layout/mobile-nav";
+import { dashboardConfig } from "@/config/dashboard";
 
 type SortDirection = 'asc' | 'desc' | null;
 
@@ -52,6 +56,7 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
     column: null,
     direction: null
   });
+  const [openNav, setOpenNav] = React.useState(false);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -183,7 +188,34 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
           borderBottom: '1px solid',
           borderColor: 'divider'
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          {/* Left side - Mobile menu icon */}
+          <Box sx={{ 
+            width: '40px',
+            display: { xs: 'block', lg: 'none' },
+            position: 'relative',
+            zIndex: 1200
+          }}>
+            <IconButton
+              onClick={() => setOpenNav(true)}
+              sx={{
+                ml: -1,
+                color: 'text.primary'
+              }}
+            >
+              <ListIcon />
+            </IconButton>
+          </Box>
+          
+          {/* Spacer to push content to sides */}
+          <Box sx={{ flexGrow: 1 }} />
+          
+          {/* Right side - Selected count, delete button, and search */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            {selected.length > 0 && (
+              <Typography color="text.secondary">
+                {selected.length} selected
+              </Typography>
+            )}
             <Button
               variant="text"
               disabled={selected.length === 0}
@@ -196,33 +228,28 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
             >
               Delete
             </Button>
-            
-            <Typography color="text.secondary">
-              {selected.length > 0 ? `${selected.length} selected` : ''}
-            </Typography>
+            <TextField
+              placeholder="Search files..."
+              variant="outlined"
+              size="small"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <MagnifyingGlassIcon size={20} />
+                  </InputAdornment>
+                ),
+                sx: { borderRadius: 4 }
+              }}
+              sx={{ 
+                width: '300px',
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 4,
+                }
+              }}
+            />
           </Box>
-          
-          <TextField
-            placeholder="Search files..."
-            variant="outlined"
-            size="small"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <MagnifyingGlassIcon size={20} />
-                </InputAdornment>
-              ),
-              sx: { borderRadius: 4 }
-            }}
-            sx={{ 
-              width: '300px',
-              '& .MuiOutlinedInput-root': {
-                borderRadius: 4,
-              }
-            }}
-          />
         </Box>
       )}
 
@@ -423,6 +450,13 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
           </TableBody>
         </Table>
       </TableContainer>
+      
+      {/* Mobile Navigation */}
+      <MobileNav
+        items={dashboardConfig.navItems}
+        onClose={() => setOpenNav(false)}
+        open={openNav}
+      />
     </Box>
   );
 }
