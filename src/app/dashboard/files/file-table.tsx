@@ -27,6 +27,8 @@ import { IconButton } from "@mui/material";
 import { List as ListIcon } from "@phosphor-icons/react/dist/ssr/List";
 import { MobileNav } from "@/components/dashboard/layout/mobile-nav";
 import { dashboardConfig } from "@/config/dashboard";
+// import { useRouter } from "next/navigation";
+// import { paths } from "@/paths";
 
 type SortDirection = 'asc' | 'desc' | null;
 
@@ -49,6 +51,7 @@ interface FileTableProps {
 }
 
 export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }: FileTableProps) {
+  // const router = useRouter();
   const [selected, setSelected] = React.useState<string[]>([]);
   const [searchTerm, setSearchTerm] = React.useState<string>('');
   const [expandedRow, setExpandedRow] = React.useState<string | null>(null);
@@ -186,7 +189,9 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
           p: 2, 
           backgroundColor: 'background.paper',
           borderBottom: '1px solid',
-          borderColor: 'divider'
+          borderColor: 'divider',
+          flexWrap: { xs: 'wrap', md: 'nowrap' },
+          gap: { xs: 1, sm: 2 }
         }}>
           {/* Left side - Mobile menu icon */}
           <Box sx={{ 
@@ -206,11 +211,35 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
             </IconButton>
           </Box>
           
+          {/* Header for all devices */}
+          <Box sx={{ 
+            ml: { xs: 1, sm: 2, lg: 0 }
+          }}>
+            <Typography 
+              variant="h5"
+              sx={{
+                fontWeight: 600,
+                color: 'text.primary',
+                letterSpacing: '-0.01em'
+              }}
+            >
+              Files
+            </Typography>
+          </Box>
+
           {/* Spacer to push content to sides */}
           <Box sx={{ flexGrow: 1 }} />
-          
+
           {/* Right side - Selected count, delete button, and search */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: { xs: 1, sm: 2, md: 3 },
+            ml: { xs: 0, sm: 'auto' },
+            mt: { xs: 2, md: 0 },
+            flexBasis: { xs: '100%', md: 'auto' },
+            justifyContent: { xs: 'space-between', md: 'flex-start' }
+          }}>
             {selected.length > 0 && (
               <Typography color="text.secondary">
                 {selected.length} selected
@@ -243,7 +272,7 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
                 sx: { borderRadius: 4 }
               }}
               sx={{ 
-                width: '300px',
+                width: { xs: '50%', sm: '220px', md: '300px' },
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 4,
                 }

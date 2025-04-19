@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const id = params.id;
+    // const id = params.id;
     
     // Here you would typically:
     // 1. Query your database for the specific file summary
