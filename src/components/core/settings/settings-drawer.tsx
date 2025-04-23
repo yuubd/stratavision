@@ -13,8 +13,6 @@ import type { Settings } from "@/types/settings";
 import type { Mode } from "@/styles/theme/types";
 
 import { OptionsColorScheme } from "./options-color-scheme";
-import { OptionsDirection } from "./options-direction";
-import { OptionsLayout } from "./options-layout";
 import { OptionsNavColor } from "./options-nav-color";
 import { OptionsPrimaryColor } from "./options-primary-color";
 
@@ -87,18 +85,6 @@ export function SettingsDrawer({
 						handleChange("dashboardNavColor", value);
 					}}
 					value={values.dashboardNavColor}
-				/>
-				<OptionsLayout
-					onChange={(value) => {
-						handleChange("dashboardLayout", value);
-					}}
-					value={values.dashboardLayout}
-				/>
-				<OptionsDirection
-					onChange={(value) => {
-						handleChange("direction", value);
-					}}
-					value={values.direction}
 				/>
 			</Stack>
 		</Drawer>

@@ -3,12 +3,11 @@ import { createTheme } from "@mui/material/styles";
 import { colorSchemes } from "./color-schemes";
 import { components } from "./components/components";
 import { shadows } from "./shadows";
-import type { Direction, PrimaryColor, Theme } from "./types";
+import type { PrimaryColor, Theme } from "./types";
 import { typography } from "./typography";
 
 interface Config {
 	primaryColor: PrimaryColor;
-	direction?: Direction;
 }
 
 function customCreateTheme(config: Config): Theme {
@@ -19,7 +18,6 @@ function customCreateTheme(config: Config): Theme {
 		cssVariables: {
 			colorSchemeSelector: "class",
 		},
-		direction: config.direction,
 		shadows,
 		shape: { borderRadius: 8 },
 		typography,

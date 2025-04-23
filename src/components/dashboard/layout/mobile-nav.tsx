@@ -19,7 +19,6 @@ import { Logo } from "@/components/core/logo";
 import { Login } from "@/components/core/login";
 
 import { icons } from "./nav-icons";
-import { WorkspacesSwitch } from "./workspaces-switch";
 
 export interface MobileNavProps {
 	onClose?: () => void;

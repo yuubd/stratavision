@@ -15,10 +15,9 @@ export interface ThemeProviderProps {
 function CustomThemeProvider({ children }: ThemeProviderProps): React.JSX.Element {
 	const { settings } = useSettings();
 
-	const direction = settings.direction ?? appConfig.direction;
 	const primaryColor = settings.primaryColor ?? appConfig.primaryColor;
 
-	const theme = createTheme({ direction, primaryColor });
+	const theme = createTheme({ primaryColor });
 
 	return (
 		<ThemeProvider disableTransitionOnChange theme={theme} defaultMode={appConfig.theme}>
