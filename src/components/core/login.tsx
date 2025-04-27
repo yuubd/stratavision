@@ -1,13 +1,21 @@
 "use client";
 
 import * as React from "react";
+import { useUser } from "@auth0/nextjs-auth0";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { User } from "@phosphor-icons/react/dist/ssr/User";
 import { paths } from "@/paths";
 
-export function Login(): React.JSX.Element {
+export function Login(): React.JSX.Element | null {
+  const { user, isLoading } = useUser();
+  if (isLoading) return null;
+  const href = user
+    ? `${paths.auth.auth0.signOut}?returnTo=${encodeURIComponent(paths.dashboard.aiSummarize)}`
+    : paths.auth.auth0.signIn;
+  const label = user ? "Sign out" : "Log in";
+  
   return (
     <Box 
       sx={{ 
@@ -19,7 +27,7 @@ export function Login(): React.JSX.Element {
     >
       <Box
         component="a"
-        href={paths.auth.auth0.signIn}
+        href={href}
         sx={{ 
           cursor: 'pointer',
           textDecoration: 'none',
@@ -56,7 +64,7 @@ export function Login(): React.JSX.Element {
               lineHeight: "28px"
             }}
           >
-            Log in
+            {label}
           </Typography>
         </Stack>
       </Box>

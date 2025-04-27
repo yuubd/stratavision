@@ -11,10 +11,16 @@ import { createClient } from "./client";
 export async function middleware(req: NextRequest): Promise<NextResponse> {
 	const auth0Client = createClient();
 	const res = await auth0Client.middleware(req);
+	const { pathname } = req.nextUrl;
 
-	if (req.nextUrl.pathname.startsWith("/dashboard")) {
+	// Allow unauthenticated access to AI Summarize
+	if (pathname.startsWith(paths.dashboard.aiSummarize)) {
+		return res;
+	}
+
+	// Require auth for other dashboard routes
+	if (pathname.startsWith("/dashboard")) {
 		const session = await auth0Client.getSession(req);
-
 		if (!session) {
 			logger.debug("[Middleware] User is not logged in, redirecting to sign in");
 			const redirectTo = new URL(paths.auth.auth0.signIn, getAppUrl());
