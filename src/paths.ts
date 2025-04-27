@@ -21,31 +21,6 @@ export const paths = {
 		clerk: {
 			signOut: "/auth/clerk/sign-out",
 		},
-		cognito: {
-			callback: "/auth/cognito/callback",
-			signIn: "/auth/cognito/sign-in",
-			signOut: "/auth/cognito/sign-out",
-		},
-		supabase: {
-			callback: { implicit: "/auth/supabase/callback/implicit", pkce: "/auth/supabase/callback/pkce" },
-			signIn: "/auth/supabase/sign-in",
-			signUp: "/auth/supabase/sign-up",
-			signUpConfirm: "/auth/supabase/sign-up-confirm",
-			signOut: "/auth/supabase/sign-out",
-			resetPassword: "/auth/supabase/reset-password",
-			recoveryLinkSent: "/auth/supabase/recovery-link-sent",
-			updatePassword: "/auth/supabase/update-password",
-		},
-		samples: {
-			signIn: { centered: "/auth/samples/sign-in/centered", split: "/auth/samples/sign-in/split" },
-			signUp: { centered: "/auth/samples/sign-up/centered", split: "/auth/samples/sign-up/split" },
-			updatePassword: {
-				centered: "/auth/samples/update-password/centered",
-				split: "/auth/samples/update-password/split",
-			},
-			resetPassword: { centered: "/auth/samples/reset-password/centered", split: "/auth/samples/reset-password/split" },
-			verifyCode: { centered: "/auth/samples/verify-code/centered", split: "/auth/samples/verify-code/split" },
-		},
 		login: "/auth/login"
 	},
 	dashboard: {
