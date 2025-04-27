@@ -27,5 +27,5 @@ export const appConfig: AppConfig = {
 	themeColor: "#090a0b",
 	primaryColor: "neonBlue",
 	logLevel: (process.env.NEXT_PUBLIC_LOG_LEVEL as keyof typeof LogLevel) || LogLevel.ALL,
-	authStrategy: (process.env.NEXT_PUBLIC_AUTH_STRATEGY as keyof typeof AuthStrategy) || AuthStrategy.NONE,
+	authStrategy: AuthStrategy.AUTH0, // (process.env.NEXT_PUBLIC_AUTH_STRATEGY as keyof typeof AuthStrategy) || AuthStrategy.NONE,
 };

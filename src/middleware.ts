@@ -1,9 +1,16 @@
 import { NextResponse, type NextMiddleware } from "next/server";
+import { appConfig } from "@/config/app";
+import { AuthStrategy } from "@/lib/auth-strategy";
+import { middleware as auth0Middleware } from "@/lib/auth0/middleware";
 
-const middleware: NextMiddleware = async (req) => {
+
+let middleware: NextMiddleware = async (req) => {
 	return NextResponse.next({ request: req });
 };
 
+if (appConfig.authStrategy === AuthStrategy.AUTH0) {
+	middleware = auth0Middleware;
+}
 export { middleware };
 
 export const config = {

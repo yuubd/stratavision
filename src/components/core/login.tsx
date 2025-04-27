@@ -5,11 +5,9 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { User } from "@phosphor-icons/react/dist/ssr/User";
-import { useLoginModal } from "@/components/auth/login-modal-provider";
+import { paths } from "@/paths";
 
 export function Login(): React.JSX.Element {
-  const { openLoginModal } = useLoginModal();
-
   return (
     <Box 
       sx={{ 
@@ -20,10 +18,12 @@ export function Login(): React.JSX.Element {
       }}
     >
       <Box
-        onClick={openLoginModal}
+        component="a"
+        href={paths.auth.auth0.signIn}
         sx={{ 
           cursor: 'pointer',
           textDecoration: 'none',
+          display: 'block',
           '&:hover': {
             backgroundColor: 'var(--NavItem-hover-background)',
           }
