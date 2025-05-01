@@ -7,12 +7,15 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { User } from "@phosphor-icons/react/dist/ssr/User";
 import { paths } from "@/paths";
+import { getAppUrl } from "@/lib/get-app-url";
 
 export function Login(): React.JSX.Element | null {
   const { user, isLoading } = useUser();
   if (isLoading) return null;
+  const appUrl = getAppUrl().toString();
+  const returnToUrl = new URL(paths.dashboard.aiSummarize, appUrl).toString();
   const href = user
-    ? `${paths.auth.auth0.signOut}?returnTo=${encodeURIComponent(paths.dashboard.aiSummarize)}`
+    ? `${paths.auth.auth0.signOut}?returnTo=${encodeURIComponent(returnToUrl)}`
     : paths.auth.auth0.signIn;
   const label = user ? "Sign out" : "Log in";
   
