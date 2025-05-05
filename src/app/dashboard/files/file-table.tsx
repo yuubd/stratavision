@@ -27,6 +27,8 @@ import { IconButton } from "@mui/material";
 import { List as ListIcon } from "@phosphor-icons/react/dist/ssr/List";
 import { MobileNav } from "@/components/dashboard/layout/mobile-nav";
 import { dashboardConfig } from "@/config/dashboard";
+import TablePagination from '@mui/material/TablePagination';
+import TableFooter from '@mui/material/TableFooter';
 // import { useRouter } from "next/navigation";
 // import { paths } from "@/paths";
 
@@ -60,6 +62,8 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
     direction: null
   });
   const [openNav, setOpenNav] = React.useState(false);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -178,6 +182,20 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
     setExpandedRow(null);
   }, [searchTerm]);
 
+  const handleChangePage = (_event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  // Slice the filtered and sorted files into the current page
+  const paginatedFiles = React.useMemo(() => {
+    const start = page * rowsPerPage;
+    return filteredSortedFiles.slice(start, start + rowsPerPage);
+  }, [filteredSortedFiles, page, rowsPerPage]);
+
   return (
     <Box>
       {/* Actions toolbar */}
@@ -284,8 +302,15 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
 
       <TableContainer
         sx={{
+          m: "14px",
+          width: 'calc(100% - 28px)',
           overflow: 'hidden',
           backgroundColor: 'background.paper',
+          borderRadius: 2,
+          border: '1px solid',
+          borderBottom: 'none',
+          borderColor: 'divider',
+          boxShadow: '0px 5px 10px 0px rgba(0, 0, 0, 0.1)',
         }}
       >
         <Table sx={{ 
@@ -296,7 +321,7 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
             padding: '16px',
             borderBottomWidth: '0.5px',
           },
-          '& .MuiTableRow-root': {
+          '& .MuiTableBody .MuiTableRow-root': {
             '&:hover': {
               backgroundColor: 'action.hover',
             },
@@ -431,7 +456,7 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
                 </TableCell>
               </TableRow>
             ) : (
-              React.Fragment && filteredSortedFiles.map((file) => (
+              React.Fragment && paginatedFiles.map((file) => (
                 <React.Fragment key={file.id}>
                   <TableRow
                     onClick={() => handleRowClick(file)}
@@ -477,6 +502,24 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
               ))
             )}
           </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={columns.length + 1} >
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <TablePagination
+                    component="div"
+                    count={filteredSortedFiles.length}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    rowsPerPageOptions={[10, 25, 50]}
+                    sx={{ m: 0 }}
+                  />
+                </Box>
+              </TableCell>
+            </TableRow>
+          </TableFooter>
         </Table>
       </TableContainer>
       

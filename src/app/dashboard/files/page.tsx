@@ -56,8 +56,7 @@ export default function FilesPage() {
 	return (
 		<Box 
 			sx={{ 
-				height: '100%',
-				backgroundColor: '#1a1c2a'
+				height: '100%'
 			}}
 		>
 			<FileTable 
