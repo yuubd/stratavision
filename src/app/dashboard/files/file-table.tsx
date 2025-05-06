@@ -40,9 +40,12 @@ interface SortState {
 }
 
 const columns = [
-  { id: 'title' as keyof FileData, label: 'Title', width: '40%' },
-  { id: 'strataNumber' as keyof FileData, label: 'Strata #', width: '30%' },
-  { id: 'createdAt' as keyof FileData, label: 'Created at', width: '30%' },
+  { id: 'title' as keyof FileData,        label: 'Address',      width: '25%' },
+  { id: 'strataNumber' as keyof FileData, label: 'Strata #',     width: '10%' },
+  { id: 'developer' as keyof FileData,    label: 'Developer',    width: '20%' },
+  { id: 'city' as keyof FileData,         label: 'City',         width: '15%' },
+  { id: 'building' as keyof FileData,     label: 'Building',     width: '15%' },
+  { id: 'createdAt' as keyof FileData,    label: 'Created at',   width: '15%' },
 ];
 
 interface FileTableProps {
@@ -63,7 +66,7 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
   });
   const [openNav, setOpenNav] = React.useState(false);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(15);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -304,7 +307,7 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
         sx={{
           m: "14px",
           width: 'calc(100% - 28px)',
-          overflow: 'hidden',
+          overflowX: 'auto',  // allow horizontal scroll when columns overflow
           backgroundColor: 'background.paper',
           borderRadius: 2,
           border: '1px solid',
@@ -477,13 +480,24 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
                     </TableCell>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Typography variant="body2">{file.title}</Typography>
+                        <Typography variant="body2">
+                          {`${file.unitNumber}-${file.streetNumber}`}
+                        </Typography>
                       </Box>
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">{file.strataNumber}</Typography>
                     </TableCell>
                     <TableCell>
+                      <Typography variant="body2">{file.developer}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">{file.city}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">{file.building}</Typography>
+                    </TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       <Typography variant="body2">{formatDate(file.createdAt)}</Typography>
                     </TableCell>
                   </TableRow>
@@ -513,7 +527,7 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
                     onPageChange={handleChangePage}
                     rowsPerPage={rowsPerPage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
-                    rowsPerPageOptions={[10, 25, 50]}
+                    rowsPerPageOptions={[10, 15, 25, 50]}
                     sx={{ m: 0 }}
                   />
                 </Box>
