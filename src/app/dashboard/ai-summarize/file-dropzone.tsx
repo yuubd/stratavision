@@ -17,7 +17,7 @@ export interface FileDropzoneProps extends DropzoneOptions {
 	title: string;
 	description: string;
 	subtitle: string;
-	onAnswerSelect?: (answer: string) => void;
+	onAnswerSelect?: (answer: string | null) => void;
 }
 
 export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...props }: FileDropzoneProps): React.JSX.Element {

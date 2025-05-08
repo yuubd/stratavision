@@ -330,7 +330,14 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
             },
           },
         }}>
-          <TableHead>
+          <TableHead sx={{
+            '& .MuiTableCell-root': {
+              borderRight: '1px solid rgba(255, 255, 255, 0.2)',
+              '&:last-child, &:first-of-type, &[padding="checkbox"]': {
+                borderRight: 'none'
+              }
+            }
+          }}>
             <TableRow>
               <TableCell padding="checkbox" sx={{ width: '48px' }}>
                 {!isEmpty && (
