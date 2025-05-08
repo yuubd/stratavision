@@ -137,9 +137,16 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
     const normalizedSearchTerm = searchTerm.toLowerCase().trim();
     
     return files.filter(file => {
-      const titleMatch = file.title?.toLowerCase().includes(normalizedSearchTerm);
-      const strataNumberMatch = file.strataNumber?.toLowerCase().includes(normalizedSearchTerm);
-      return titleMatch || strataNumberMatch;
+      // Create combined address for searching
+      const fullAddress = `${file.unitNumber}-${file.streetNumber}`.toLowerCase();
+      
+      return columns.some(column => {
+        const value = file[column.id];
+        if (value === null || value === undefined) return false;
+        return String(value).toLowerCase().includes(normalizedSearchTerm);
+      }) || 
+      // Search in combined address
+      fullAddress.includes(normalizedSearchTerm);
     });
   }, [files, searchTerm]);
   
