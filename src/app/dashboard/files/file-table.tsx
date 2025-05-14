@@ -40,11 +40,11 @@ interface SortState {
 }
 
 const columns = [
-  { id: 'title' as keyof FileData,        label: 'Address',      width: '25%' },
+  { id: 'title' as keyof FileData,        label: 'Address',      width: '30%' },
   { id: 'strataNumber' as keyof FileData, label: 'Strata #',     width: '10%' },
-  { id: 'developer' as keyof FileData,    label: 'Developer',    width: '20%' },
-  { id: 'city' as keyof FileData,         label: 'City',         width: '15%' },
-  { id: 'building' as keyof FileData,     label: 'Building',     width: '15%' },
+  { id: 'developer' as keyof FileData,    label: 'Developer',    width: '12.5%' },
+  { id: 'city' as keyof FileData,         label: 'City',         width: '12.5%' },
+  { id: 'building' as keyof FileData,     label: 'Building',     width: '20%' },
   { id: 'createdAt' as keyof FileData,    label: 'Created at',   width: '15%' },
 ];
 
@@ -500,7 +500,17 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
                       </Box>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2">{file.strataNumber}</Typography>
+                      <Typography 
+                        variant="body2"
+                        sx={{
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          minWidth: '90px' // Adjust the width as needed
+                        }}
+                      >
+                        {file.strataNumber}
+                      </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">{file.developer}</Typography>
