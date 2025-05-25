@@ -3,7 +3,7 @@
 import * as React from "react";
 import { mockDocumentSummary } from "@/app/mock-data";
 import type { DocumentSummaryData } from "./types";
-import { saveSummary } from "../files/service";
+import { saveSummary } from "../storage/service";
 import { useRouter } from "next/navigation";
 import { paths } from "@/paths";
 import { SummaryView } from "../shared/summary-view";
@@ -28,7 +28,7 @@ export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: 
       });
       
       // Navigate to files tab after successful save
-      router.push(paths.dashboard.files);
+      router.push(paths.dashboard.storage);
     } catch (error) {
       console.error('Failed to save summary:', error);
       // You might want to show an error message to the user here

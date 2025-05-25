@@ -86,10 +86,8 @@ export function SettingsButton(): React.JSX.Element {
 				onUpdate={handleUpdate}
 				open={openDrawer}
 				values={{
-					direction: settings.direction ?? appConfig.direction,
 					theme: mode,
 					primaryColor: settings.primaryColor ?? appConfig.primaryColor,
-					dashboardLayout: settings.dashboardLayout ?? dashboardConfig.layout,
 					dashboardNavColor: settings.dashboardNavColor ?? dashboardConfig.navColor,
 				}}
 			/>

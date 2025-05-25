@@ -6,6 +6,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    console.log('touched here')
     // const id = params.id;
     
     // Here you would typically:
@@ -14,6 +15,7 @@ export async function GET(
     
     // Return the entire mock summary data for any ID
     // This will make it identical to what's shown in the AI summarize tab
+
     return NextResponse.json({ summary: JSON.stringify(mockDocumentSummary) });
   } catch (error) {
     console.error('Failed to fetch summary:', error);

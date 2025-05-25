@@ -19,7 +19,7 @@ export const dashboardConfig = {
 			key: "main",
 			items: [
 				{ key: "ai-summarize", title: "AI Summarize", href: paths.dashboard.aiSummarize, icon: "file-text" },
-				{ key: "files", title: "Files", href: paths.dashboard.files, icon: "database" }
+				{ key: "storage", title: "Storage", href: paths.dashboard.storage, icon: "database" }
 			],
 		},
 	],

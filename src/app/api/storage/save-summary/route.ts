@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import type { SaveSummaryRequest } from '@/app/dashboard/files/service';
+import type { SaveSummaryRequest } from '@/app/dashboard/storage/service';
 
 export async function POST(request: Request) {
   try {

@@ -24,7 +24,7 @@ export const ExpandedRowContent = ({ file }: ExpandedRowContentProps) => {
     const fetchSummary = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/files/${file.id}/summary`);
+        const response = await fetch(`/api/storage/${file.id}/summary`);
         if (response.ok) {
           const data = await response.json();
           // Parse the stringified JSON summary

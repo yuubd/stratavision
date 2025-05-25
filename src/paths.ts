@@ -14,7 +14,7 @@ export const paths = {
 	dashboard: {
 		overview: "/dashboard",
 		aiSummarize: "/dashboard/ai-summarize",
-		files: "/dashboard/files",
+		storage: "/dashboard/storage",
 	},
 	notAuthorized: "/errors/not-authorized",
 	notFound: "/errors/not-found",

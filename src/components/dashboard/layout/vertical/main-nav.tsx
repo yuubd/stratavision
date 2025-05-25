@@ -17,9 +17,9 @@ export function MainNav({ items }: MainNavProps): React.JSX.Element {
 	const [openNav, setOpenNav] = React.useState<boolean>(false);
 	const pathname = usePathname();
 	const isAiSummarizePage = pathname === "/dashboard/ai-summarize";
-	const isFilesPage = pathname === "/dashboard/files";
+	const isStoragePage = pathname === "/dashboard/storage";
 
-	return isFilesPage ? (
+	return isStoragePage ? (
 		<React.Fragment>
 			<Box
 				component="header"

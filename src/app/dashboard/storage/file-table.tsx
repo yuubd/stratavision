@@ -251,7 +251,7 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
                 letterSpacing: '-0.01em'
               }}
             >
-              Files
+              Storage
             </Typography>
           </Box>
 
