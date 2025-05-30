@@ -18,7 +18,7 @@ import { Logo } from "@/components/core/logo";
 import type { ColorScheme } from "@/styles/theme/types";
 
 import { icons } from "../nav-icons";
-import { Login } from "../../../core/login";
+import { Login } from "../../core/login";
 import { navColorStyles } from "./styles";
 
 const logoColors = {

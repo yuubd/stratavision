@@ -25,7 +25,7 @@ import { deleteFile } from "./service";
 import { ExpandedRowContent } from './expanded-row-content';
 import { IconButton } from "@mui/material";
 import { List as ListIcon } from "@phosphor-icons/react/dist/ssr/List";
-import { MobileNav } from "@/components/dashboard/layout/mobile-nav";
+import { MobileNav } from "@/components/layout/mobile-nav";
 import { dashboardConfig } from "@/config/dashboard";
 import TablePagination from '@mui/material/TablePagination';
 import TableFooter from '@mui/material/TableFooter';
