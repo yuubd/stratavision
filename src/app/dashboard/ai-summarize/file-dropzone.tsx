@@ -109,7 +109,6 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 		},
 		onDrop: handleDrop,
 		multiple: true,
-		disabled: files.length > 0,
 	});
 
 	if (isAnalyzed) {
@@ -130,21 +129,21 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 				py: 5,
 				px: 3,
 				minHeight: 360,
-				...(isDragActive && files.length === 0 && {
+				...(isDragActive && {
 					bgcolor: "var(--mui-palette-action-selected)",
 					opacity: 0.5,
 				}),
 				"&:hover": {
-					...(!isDragActive && files.length === 0 && {
+					...(!isDragActive && {
 						bgcolor: "var(--mui-palette-action-hover)",
 					}),
 				},
 				maxWidth: 600,
 				mx: "auto",
 			}}
-			{...(files.length === 0 ? getRootProps() : {})}
+			{...getRootProps()}
 		>
-			{files.length === 0 && <input {...getInputProps()} />}
+			<input {...getInputProps()} />
 			<Stack spacing={2} alignItems="center" sx={{ width: "100%" }}>
 				<Avatar
 					sx={{
