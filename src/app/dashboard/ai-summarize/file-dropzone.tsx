@@ -74,8 +74,18 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 
 	const handleDrop = React.useCallback(
 		(acceptedFiles: FileWithPath[]) => {
-			const pdfFiles = acceptedFiles.filter(f => f.type === "application/pdf" || f.name.endsWith(".pdf")); // also allow images and .docs
-			const newFiles = pdfFiles.map(file => ({ file, status: "uploading" as const, progress: 0 }));
+			const allowedExtensions = [
+				".pdf", ".png", ".jpg", ".jpeg", ".doc", ".docx"
+			];
+			const allowedTypes = [
+				"application/pdf",
+				"image/png", "image/jpeg",
+				"application/msword",
+			];
+			const filteredFiles = acceptedFiles.filter(f =>
+				allowedTypes.includes(f.type) || allowedExtensions.some(ext => f.name.toLowerCase().endsWith(ext))
+			);
+			const newFiles = filteredFiles.map(file => ({ file, status: "uploading" as const, progress: 0 }));
 			setFiles(prev => [...prev, ...newFiles]);
 			newFiles.forEach(uploadFile);
 			props.onDrop?.(acceptedFiles, [], undefined as any);
@@ -92,7 +102,11 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		...props,
-		accept: { "application/pdf": [".pdf"] },
+		accept: {
+			"application/pdf": [".pdf"],
+			"image/*": [".png", ".jpg", ".jpeg"],
+			"application/msword": [".doc", ".docx"],
+		},
 		onDrop: handleDrop,
 		multiple: true,
 		disabled: files.length > 0,
@@ -125,7 +139,7 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 						bgcolor: "var(--mui-palette-action-hover)",
 					}),
 				},
-				maxWidth: 420,
+				maxWidth: 600,
 				mx: "auto",
 			}}
 			{...(files.length === 0 ? getRootProps() : {})}
