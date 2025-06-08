@@ -17,17 +17,14 @@ export default function AiSummarizePage(): React.JSX.Element {
 				minHeight: "calc(100vh - 64px)",
 			}}
 		>
-			<Box sx={{ maxWidth: !isFileUploaded ? 600 : "100%", mx: "auto", width: "100%" }}>
+			<Box sx={{ maxWidth: !isFileUploaded ? "100%": 600, mx: "auto", width: "100%" }}>
 				<FileDropzone
 					accept={{ "application/pdf": [".pdf"] }}
 					title="Summarize your strata documents"
 					description="Upload files to analyze your document"
 					subtitle={`Strata documents, property history,\nmeeting notes, and any additional documents`}
-					onDrop={(acceptedFiles) => {
-						setIsFileUploaded(true);
-						console.log(acceptedFiles);
-					}}
 					onAnswerSelect={(answer) => setSelectedAnswer(answer)}
+					onFileUploaded={(bool) => setIsFileUploaded(bool)}
 				/>
 			</Box>
 		</Box>
