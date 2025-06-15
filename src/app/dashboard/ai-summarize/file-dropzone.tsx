@@ -201,11 +201,11 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 					variant="contained"
 					sx={{ mt: 2, width: "100%" }}
 					disabled={!allDone || files.length === 0}
-					onClick={
-						() => {
-							setIsAnalyzed(true);
-						}
-					}
+					onClick={e => {
+						e.stopPropagation();
+						setIsAnalyzed(true);
+						props.onFileUploaded?.(true);
+					}}
 				>
 					Next
 				</Button>
