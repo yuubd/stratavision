@@ -14,6 +14,8 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Button from "@mui/material/Button";
 import { File as FileIcon } from "@phosphor-icons/react/dist/ssr/File";
 import { WarningDiamond as ErrorIcon } from "@phosphor-icons/react/dist/ssr/WarningDiamond";
+import { Trash as TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
+import IconButton from "@mui/material/IconButton";
 
 export type File = FileWithPath;
 
@@ -111,6 +113,10 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 		multiple: true,
 	});
 
+	const handleRemoveFile = (fileName: string) => {
+		setFiles(prev => prev.filter(f => f.file.name !== fileName));
+	};
+
 	if (isAnalyzed) {
 		return <DocumentSummary onAnswerSelect={onAnswerSelect} />;
 	}
@@ -188,6 +194,17 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 										</Typography>
 									)}
 								</Box>
+								<IconButton
+									size="small"
+									color="error"
+									onClick={e => {
+										e.stopPropagation();
+										handleRemoveFile(f.file.name);
+									}}
+									sx={{ ml: 1 }}
+								>
+									<TrashIcon size={18} />
+								</IconButton>
 								{f.status === "error" && (
 									<Button size="small" color="error" onClick={e => { e.stopPropagation(); retryUpload(f); }} sx={{ ml: 1 }}>
 										Retry
