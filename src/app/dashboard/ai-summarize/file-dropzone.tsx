@@ -35,6 +35,7 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 		error?: string;
 	}[]>([]);
 	const [isAnalyzed, setIsAnalyzed] = React.useState(false);
+	const [isSummarizing, setIsSummarizing] = React.useState(false);
 
 	const uploadFile = (fileObj: { file: FileWithPath; status: string; progress: number }) => {
 		// Simulate upload with progress
@@ -116,6 +117,10 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 	const handleRemoveFile = (fileName: string) => {
 		setFiles(prev => prev.filter(f => f.file.name !== fileName));
 	};
+
+	if (isSummarizing) {
+		return <ProgressIndicator />;
+	}
 
 	if (isAnalyzed) {
 		return <DocumentSummary onAnswerSelect={onAnswerSelect} />;
@@ -220,8 +225,12 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 					disabled={!allDone || files.length === 0}
 					onClick={e => {
 						e.stopPropagation();
-						setIsAnalyzed(true);
-						props.onFileUploaded?.(true);
+						setIsSummarizing(true);
+						setTimeout(() => {
+							setIsSummarizing(false);
+							setIsAnalyzed(true);
+							props.onFileUploaded?.(true);
+						}, 2000);
 					}}
 				>
 					Next
