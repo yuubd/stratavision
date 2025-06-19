@@ -1,9 +1,8 @@
-import type { PrimaryColor } from "@/styles/theme/types";
-
-export type DashboardNavColor = "blend_in" | "discrete" | "evident";
+import type { PrimaryColor, DashboardNavColor, Mode } from "@/styles/theme/types";
 
 export interface Settings {
 	language?: string;
 	primaryColor?: PrimaryColor;
 	dashboardNavColor?: DashboardNavColor;
+	theme?: Mode;
 }

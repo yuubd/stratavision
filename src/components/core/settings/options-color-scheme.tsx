@@ -6,7 +6,6 @@ import Stack from "@mui/material/Stack";
 import { Devices as DevicesIcon } from "@phosphor-icons/react/dist/ssr/Devices";
 import { Moon as MoonIcon } from "@phosphor-icons/react/dist/ssr/Moon";
 import { Sun as SunIcon } from "@phosphor-icons/react/dist/ssr/Sun";
-
 import type { Mode } from "@/styles/theme/types";
 
 import { Option } from "./option";

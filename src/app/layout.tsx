@@ -13,7 +13,6 @@ import { I18nProvider } from "@/components/core/i18n-provider";
 import { AuthStrategy } from "@/lib/auth-strategy";
 import { LocalizationProvider } from "@/components/core/localization-provider";
 
-import { SettingsButton } from "@/components/core/settings/settings-button";
 import { SettingsProvider } from "@/components/core/settings/settings-context";
 import { ThemeProvider } from "@/components/core/theme-provider";
 import { Toaster } from "@/components/core/toaster";
@@ -54,7 +53,6 @@ export default async function Layout({ children }: LayoutProps): Promise<React.J
 									<EmotionCacheProvider options={{ key: "mui" }}>
 										<ThemeProvider>
 											{children}
-											<SettingsButton />
 											<Toaster position="bottom-right" />
 										</ThemeProvider>
 									</EmotionCacheProvider>

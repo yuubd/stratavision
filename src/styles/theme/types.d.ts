@@ -4,4 +4,6 @@ export type PrimaryColor = "chateauGreen" | "neonBlue" | "royalBlue" | "tomatoOr
 
 export type ColorScheme = "dark" | "light";
 
+export type DashboardNavColor = "blend_in" | "discrete" | "evident";
+
 export type Mode = "dark" | "light" | "system";
