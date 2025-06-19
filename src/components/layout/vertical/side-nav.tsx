@@ -61,7 +61,6 @@ export function SideNav({ color = "evident", items = [] }: SideNavProps): React.
 					</Box>
 				</div>
 			</Stack>
-			<Box sx={{ borderTop: '1px solid', borderColor: 'var(--NavItem-children-border)' }} />
 			<Box
 				component="nav"
 				sx={{
