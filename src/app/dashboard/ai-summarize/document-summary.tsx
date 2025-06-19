@@ -6,7 +6,7 @@ import type { DocumentSummaryData } from "./types";
 import { saveSummary } from "../storage/service";
 import { useRouter } from "next/navigation";
 import { paths } from "@/paths";
-import { SummaryView } from "../shared/summary-view";
+import { SummaryView } from "../../shared/summary-view";
 
 export interface DocumentSummaryProps {
   data?: DocumentSummaryData;

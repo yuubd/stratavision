@@ -7,7 +7,7 @@ import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import type { FileData } from "./service";
 import type { DocumentSummaryData } from '../ai-summarize/types';
-import { SummaryView } from "../shared/summary-view";
+import { SummaryView } from "../../shared/summary-view";
 
 interface ExpandedRowContentProps {
   file: FileData;

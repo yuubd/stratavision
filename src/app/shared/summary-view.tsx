@@ -2,12 +2,12 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import { SummarySection } from "../ai-summarize/summary-section";
-import { QuestionAnswer as QuestionAnswerComponent } from "../ai-summarize/question-answer";
+import { SummarySection } from "../dashboard/ai-summarize/summary-section";
+import { QuestionAnswer as QuestionAnswerComponent } from "../dashboard/ai-summarize/question-answer";
 import { CaretDown as ExpandIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { CaretUp as CollapseIcon } from "@phosphor-icons/react/dist/ssr/CaretUp";
-import type { DocumentSummaryData, QuestionAnswer } from "../ai-summarize/types";
-import { PDFViewer } from "../ai-summarize/pdf-viewer";
+import type { DocumentSummaryData, QuestionAnswer } from "../dashboard/ai-summarize/types";
+import { PDFViewer } from "../dashboard/ai-summarize/pdf-viewer";
 
 export interface SummaryViewProps {
   data: DocumentSummaryData;
