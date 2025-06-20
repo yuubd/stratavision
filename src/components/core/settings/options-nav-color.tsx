@@ -6,7 +6,7 @@ import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import { Info as InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
 
-import type { DashboardNavColor } from "@/types/settings";
+import type { DashboardNavColor } from "@/styles/theme/types";
 
 import { Option } from "./option";
 

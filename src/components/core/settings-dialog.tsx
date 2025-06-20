@@ -3,7 +3,6 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -15,6 +14,8 @@ import { Camera as CameraIcon } from "@phosphor-icons/react/dist/ssr/Camera";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { useTheme } from "@mui/material/styles";
+import { useRouter } from "next/navigation";
+
 import { OptionsPrimaryColor } from "@/components/core/settings/options-primary-color";
 import { OptionsColorScheme } from "@/components/core/settings/options-color-scheme";
 import { OptionsNavColor } from "@/components/core/settings/options-nav-color";
@@ -22,7 +23,7 @@ import { useSettings } from "@/components/core/settings/settings-context";
 import { Mode } from "@/styles/theme/types";
 import { Settings } from "@/types/settings";
 import { setSettings as setPersistedSettings } from "@/lib/settings";
-import { useRouter } from "next/navigation";
+
 import { useColorScheme } from "@mui/material/styles";
 
 interface SettingsDialogProps {
