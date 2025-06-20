@@ -5,22 +5,19 @@ import { use } from "i18next";
 import { initReactI18next, useTranslation } from "react-i18next";
 
 import { logger } from "@/lib/default-logger";
-import { de } from "@/locales/de";
-import { en } from "@/locales/en";
-import { es } from "@/locales/es";
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
 use(initReactI18next)
 	.init({
 		debug: false,
-		ns: Object.keys(en),
+		ns: ["common"],
 		defaultNS: "common",
 		fallbackNS: "common",
 		fallbackLng: "en",
 		resources: {
-			de,
-			en,
-			es,
+			en: {
+				common: {}
+			}
 		},
 	})
 	// eslint-disable-next-line unicorn/prefer-top-level-await
