@@ -15,6 +15,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { useTheme } from "@mui/material/styles";
 import { useRouter } from "next/navigation";
+import Alert from "@mui/material/Alert";
 
 import { OptionsPrimaryColor } from "@/components/core/settings/options-primary-color";
 import { OptionsColorScheme } from "@/components/core/settings/options-color-scheme";
@@ -23,6 +24,7 @@ import { useSettings } from "@/components/core/settings/settings-context";
 import { Mode } from "@/styles/theme/types";
 import { Settings } from "@/types/settings";
 import { setSettings as setPersistedSettings } from "@/lib/settings";
+import { fetchUserProfile, updateUserProfile, type UserProfile } from "@/lib/profile-service";
 
 import { useColorScheme } from "@mui/material/styles";
 
@@ -38,10 +40,36 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
   const [brokerage, setBrokerage] = React.useState("");
   const [license, setLicense] = React.useState("");
   const [saving, setSaving] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [profile, setProfile] = React.useState<UserProfile | null>(null);
   const { mode, setMode } = useColorScheme();
   const { settings, setSettings } = useSettings();
   const theme = useTheme();
   const router = useRouter();
+
+  // Fetch profile data when dialog opens
+  React.useEffect(() => {
+    if (open && !profile) {
+      fetchProfileData();
+    }
+  }, [open, profile]);
+
+  const fetchProfileData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const profileData = await fetchUserProfile();
+      setProfile(profileData);
+      setBrokerage(profileData.brokerage);
+      setLicense(profileData.license);
+    } catch (err) {
+      setError("Failed to load profile data");
+      console.error("Error fetching profile:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleUpdate = async (values: Partial<Settings> & { theme?: Mode }): Promise<void> => {
     const { theme, ...other } = values;
@@ -67,8 +95,18 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
   };
 
   const handleSave = async () => {
-    setSaving(true);
-    setTimeout(() => setSaving(false), 1200);
+    try {
+      setSaving(true);
+      setError(null);
+      await updateUserProfile({ brokerage, license });
+      // Refresh profile data after update
+      await fetchProfileData();
+    } catch (err) {
+      setError("Failed to save profile");
+      console.error("Error updating profile:", err);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleAppSettingChange = React.useCallback(
@@ -80,12 +118,19 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
 
   const renderProfileTab = () => (
     <Stack spacing={3} alignItems="center" sx={{ mt: 1 }}>
+      {error && (
+        <Alert severity="error" sx={{ width: "100%" }}>
+          {error}
+        </Alert>
+      )}
       <Box sx={{ position: "relative" }}>
         <Avatar
-          src={avatar || user?.picture || undefined}
+          src={avatar || profile?.picture || user?.picture || undefined}
           sx={{ width: 80, height: 80, fontSize: 36, bgcolor: "#1565c0" }}
         >
-          {(!avatar && !user?.picture && user?.name) ? user.name[0].toUpperCase() : null}
+          {(!avatar && !profile?.picture && !user?.picture && (profile?.name || user?.name)) 
+            ? (profile?.name || user?.name)[0].toUpperCase() 
+            : null}
         </Avatar>
         <IconButton
           color="primary"
@@ -99,13 +144,13 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
       </Box>
       <TextField
         label="Name"
-        value={user?.name || ""}
+        value={profile?.name || user?.name || ""}
         InputProps={{ readOnly: true }}
         fullWidth
       />
       <TextField
         label="Email"
-        value={user?.email || ""}
+        value={profile?.email || user?.email || ""}
         InputProps={{ readOnly: true }}
         fullWidth
       />
@@ -114,17 +159,19 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
         value={brokerage}
         onChange={e => setBrokerage(e.target.value)}
         fullWidth
+        disabled={loading}
       />
       <TextField
         label="Realtor License Number"
         value={license}
         onChange={e => setLicense(e.target.value)}
         fullWidth
+        disabled={loading}
       />
       <Button
         variant="contained"
         onClick={handleSave}
-        disabled={saving}
+        disabled={saving || loading}
         sx={{ mt: 2, width: "100%" }}
       >
         {saving ? "Saving..." : "Save"}

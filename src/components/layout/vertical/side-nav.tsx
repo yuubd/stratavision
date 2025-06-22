@@ -11,11 +11,10 @@ import { CaretDown as CaretDownIcon } from "@phosphor-icons/react/dist/ssr/Caret
 import { CaretRight as CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 
 import type { NavItemConfig } from "@/types/nav";
-import type { DashboardNavColor } from "@/types/settings";
+import type { DashboardNavColor, ColorScheme } from "@/styles/theme/types";
 import { paths } from "@/paths";
 import { isNavItemActive } from "@/lib/is-nav-item-active";
 import { Logo } from "@/components/core/logo";
-import type { ColorScheme } from "@/styles/theme/types";
 
 import { icons } from "../nav-icons";
 import { Login } from "../../core/login";

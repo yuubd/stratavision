@@ -1,5 +1,4 @@
-import type { DashboardNavColor } from "@/types/settings";
-import type { ColorScheme } from "@/styles/theme/types";
+import type { DashboardNavColor, ColorScheme } from "@/styles/theme/types";
 
 export const navColorStyles = {
 	dark: {
