@@ -37,8 +37,13 @@ interface SettingsDialogProps {
 export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
   const [tab, setTab] = React.useState(0);
   const [avatar, setAvatar] = React.useState<string | null>(null);
+  
+  // Form State
+  const [name, setName] = React.useState("");
+  const [email, setEmail] = React.useState("");
   const [brokerage, setBrokerage] = React.useState("");
   const [license, setLicense] = React.useState("");
+  
   const [saving, setSaving] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -61,8 +66,11 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
       setError(null);
       const profileData = await fetchUserProfile();
       setProfile(profileData);
-      setBrokerage(profileData.brokerage);
-      setLicense(profileData.license);
+      // Populate all form fields
+      setName(profileData.name || "");
+      setEmail(profileData.email || "");
+      setBrokerage(profileData.brokerage || "");
+      setLicense(profileData.license || "");
     } catch (err) {
       setError("Failed to load profile data");
       console.error("Error fetching profile:", err);
@@ -98,7 +106,7 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
     try {
       setSaving(true);
       setError(null);
-      await updateUserProfile({ brokerage, license });
+      await updateUserProfile({ name, email, brokerage, license });
       // Refresh profile data after update
       await fetchProfileData();
     } catch (err) {
@@ -115,6 +123,8 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
     },
     [handleUpdate]
   );
+
+  const isDatabaseUser = user?.sub?.startsWith('auth0|');
 
   const renderProfileTab = () => (
     <Stack spacing={3} alignItems="center" sx={{ mt: 1 }}>
@@ -144,15 +154,20 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
       </Box>
       <TextField
         label="Name"
-        value={profile?.name || user?.name || ""}
-        InputProps={{ readOnly: true }}
+        value={name}
+        onChange={e => setName(e.target.value)}
         fullWidth
+        disabled={loading}
       />
       <TextField
         label="Email"
-        value={profile?.email || user?.email || ""}
-        InputProps={{ readOnly: true }}
+        value={email}
+        onChange={e => setEmail(e.target.value)}
         fullWidth
+        InputProps={{
+          readOnly: !isDatabaseUser,
+        }}
+        helperText={!isDatabaseUser ? "Email cannot be changed for social logins." : ""}
       />
       <TextField
         label="Real Estate Brokerage Name"
