@@ -47,6 +47,7 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
   const [saving, setSaving] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [success, setSuccess] = React.useState<string | null>(null);
   const [profile, setProfile] = React.useState<UserProfile | null>(null);
   const { mode, setMode } = useColorScheme();
   const { settings, setSettings } = useSettings();
@@ -102,15 +103,26 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
     }
   };
 
+  // Validation
+  const isNameValid = name.trim().length > 0;
+
   const handleSave = async () => {
+    if (!isNameValid) {
+      setError("Name cannot be empty or whitespace only.");
+      setSuccess(null);
+      return;
+    }
     try {
       setSaving(true);
       setError(null);
+      setSuccess(null);
       await updateUserProfile({ name, email, brokerage, license });
+      setSuccess("Profile updated successfully!");
       // Refresh profile data after update
       await fetchProfileData();
     } catch (err) {
       setError("Failed to save profile");
+      setSuccess(null);
       console.error("Error updating profile:", err);
     } finally {
       setSaving(false);
@@ -131,6 +143,11 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
       {error && (
         <Alert severity="error" sx={{ width: "100%" }}>
           {error}
+        </Alert>
+      )}
+      {success && (
+        <Alert severity="success" sx={{ width: "100%" }}>
+          {success}
         </Alert>
       )}
       <Box sx={{ position: "relative" }}>
@@ -158,6 +175,8 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
         onChange={e => setName(e.target.value)}
         fullWidth
         disabled={loading}
+        error={!isNameValid}
+        helperText={!isNameValid ? "Name cannot be empty or whitespace only." : ""}
       />
       <TextField
         label="Email"
@@ -186,7 +205,7 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
       <Button
         variant="contained"
         onClick={handleSave}
-        disabled={saving || loading}
+        disabled={saving || loading || !isNameValid}
         sx={{ mt: 2, width: "100%" }}
       >
         {saving ? "Saving..." : "Save"}
