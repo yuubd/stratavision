@@ -34,12 +34,14 @@ async function updateUserProfile(userId: string, updates: any) {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(updates),
+    body: JSON.stringify({
+      user_metadata: updates,
+    }),
   });
 
   if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(`Failed to update user. Status: ${response.status}. Body: ${errorBody}`);
+    const error = await response.text();
+    throw new Error(`Failed to update user: ${error}`);
   }
 
   return response.json();
@@ -57,7 +59,6 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user metadata from Management API
-    let userFromApi: any = null;
     let userMetadata: { brokerage?: string; license?: string } = {};
     try {
       const token = await getManagementToken();
@@ -68,8 +69,8 @@ export async function GET(request: NextRequest) {
       });
       
       if (response.ok) {
-        userFromApi = await response.json();
-        userMetadata = userFromApi.user_metadata || {};
+        const userData = await response.json();
+        userMetadata = userData.user_metadata || {};
       }
     } catch (error) {
       console.error("Error fetching user metadata:", error);
@@ -77,13 +78,13 @@ export async function GET(request: NextRequest) {
 
     const profile = {
       id: session.user.sub,
-      name: userFromApi?.name || session.user.name,
-      email: userFromApi?.email || session.user.email,
-      picture: userFromApi?.picture || session.user.picture,
+      name: session.user.name,
+      email: session.user.email,
+      picture: session.user.picture,
       brokerage: userMetadata.brokerage || "",
       license: userMetadata.license || "",
-      emailVerified: userFromApi?.email_verified ?? session.user.email_verified,
-      updatedAt: userFromApi?.updated_at || session.user.updated_at,
+      emailVerified: session.user.email_verified || false,
+      updatedAt: new Date().toISOString()
     };
     return NextResponse.json(profile);
   } catch (error) {
@@ -107,56 +108,27 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, email, brokerage, license } = body;
-    const { sub, email: originalEmail } = session.user;
+    const { brokerage, license } = body;
 
-    // A user's `sub` (subject) claim is prefixed with their connection type.
-    // e.g., 'google-oauth2|12345' for Google or 'auth0|67890' for a database user.
-    const isDatabaseUser = sub.startsWith('auth0|');
-
-    const payloadToUpdate: {
-      name?: string;
-      email?: string;
-      user_metadata?: { brokerage?: string; license?: string };
-    } = {};
-
-    if (name) payloadToUpdate.name = name;
-
-    // Only attempt to update email for database connections.
-    // Social connections like Google often lock this field.
-    if (email && isDatabaseUser) {
-      payloadToUpdate.email = email;
-    }
-
-    const metadata: { brokerage?: string; license?:string } = {};
-    if (brokerage) metadata.brokerage = brokerage;
-    if (license) metadata.license = license;
-    
-    if (Object.keys(metadata).length > 0) {
-      payloadToUpdate.user_metadata = metadata;
-    }
-
-    if (Object.keys(payloadToUpdate).length === 0) {
+    // Validate required fields
+    if (!brokerage || !license) {
       return NextResponse.json(
-        { error: "No fields to update provided" },
+        { error: "Brokerage and license are required" },
         { status: 400 }
       );
     }
 
     // Update user profile via Management API
-    await updateUserProfile(session.user.sub, payloadToUpdate);
+    await updateUserProfile(session.user.sub, {
+      brokerage,
+      license,
+    });
 
-    console.log("Profile update requested:", { payload: payloadToUpdate, userId: session.user.sub });
-    
-    let message = "Profile updated successfully";
-    // Provide feedback if a social user tried to change their email
-    if (email && email !== originalEmail && !isDatabaseUser) {
-      message = "Profile updated. Email cannot be changed for accounts created via Google.";
-    }
+    console.log("Profile updated successfully:", { brokerage, license, userId: session.user.sub });
 
     return NextResponse.json({ 
       success: true,
-      message,
+      message: "Profile updated successfully"
     });
   } catch (error) {
     console.error("Error updating profile:", error);

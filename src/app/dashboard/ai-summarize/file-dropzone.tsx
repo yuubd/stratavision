@@ -34,8 +34,12 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 		progress: number;
 		error?: string;
 	}[]>([]);
+	const [classified, setClassified] = React.useState<any[] | null>(null);
+	const [missingTypes, setMissingTypes] = React.useState<string[] | null>(null);
 	const [isAnalyzed, setIsAnalyzed] = React.useState(false);
 	const [isSummarizing, setIsSummarizing] = React.useState(false);
+	const [loading, setLoading] = React.useState(false);
+	const [error, setError] = React.useState<string | null>(null);
 
 	const uploadFile = (fileObj: { file: FileWithPath; status: string; progress: number }) => {
 		// Simulate upload with progress
@@ -118,12 +122,128 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 		setFiles(prev => prev.filter(f => f.file.name !== fileName));
 	};
 
+	const handleNext = async (e: React.MouseEvent) => {
+		e.stopPropagation();
+		setLoading(true);
+		setError(null);
+		try {
+			const formData = new FormData();
+			files.forEach(f => {
+				if (f.status === "uploaded") {
+					formData.append("file", f.file, f.file.name);
+				}
+			});
+			const res = await fetch("/api/ai-summarize", {
+				method: "POST",
+				body: formData,
+			});
+			if (!res.ok) throw new Error("Classification failed");
+			const data = await res.json();
+			setClassified(data.classified);
+			setMissingTypes(data.missing_types);
+			setIsAnalyzed(true);
+		} catch (err) {
+			setError("Failed to classify files");
+		} finally {
+			setLoading(false);
+		}
+	};
+
 	if (isSummarizing) {
 		return <ProgressIndicator />;
 	}
 
-	if (isAnalyzed) {
-		return <DocumentSummary onAnswerSelect={onAnswerSelect} />;
+	if (isAnalyzed && classified) {
+		return (
+			<Box
+				sx={{
+					border: "2px dashed var(--mui-palette-divider)",
+					borderRadius: 2,
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+					justifyContent: "center",
+					outline: "none",
+					py: 5,
+					px: 3,
+					minHeight: 360,
+					maxWidth: 600,
+					mx: "auto",
+				}}
+			>
+				<Typography variant="h6" align="center" sx={{ mb: 2 }}>
+					Document Review
+				</Typography>
+				<Box sx={{ width: "100%", mb: 2 }}>
+					{classified.map((f, idx) => (
+						<Box key={f.filename + idx} sx={{ display: "flex", alignItems: "center", mb: 1, gap: 2 }}>
+							<Avatar sx={{ bgcolor: "var(--mui-palette-background-paper)", color: "var(--mui-palette-text-primary)", width: 32, height: 32 }}>
+								<FileIcon size={20} />
+							</Avatar>
+							<Typography variant="body2" sx={{ fontWeight: 500, color: "var(--mui-palette-text-primary)", flex: 1 }} noWrap>
+								{f.filename}
+							</Typography>
+							<Typography variant="caption" color="primary" sx={{ ml: 1 }}>
+								{f.type}
+							</Typography>
+						</Box>
+					))}
+				</Box>
+				{missingTypes && missingTypes.length > 0 && (
+					<Box sx={{ width: "100%", mb: 2 }}>
+						<Typography variant="body2" color="error" sx={{ mb: 1 }}>
+							Missing required document types:
+						</Typography>
+						<ul style={{ margin: 0, paddingLeft: 20 }}>
+							{missingTypes.map(type => (
+								<li key={type} style={{ color: "#e57373" }}>{type}</li>
+							))}
+						</ul>
+						<Typography variant="body2" sx={{ mt: 1 }}>
+							Please upload the missing files.<br />
+							<span style={{ color: '#888' }}>Or continue to analyze with the current files.</span>
+						</Typography>
+						<Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+							<Button
+								variant="outlined"
+								sx={{ width: "100%" }}
+								onClick={() => setIsAnalyzed(false)}
+							>
+								Upload More Files
+							</Button>
+							<Button
+								variant="contained"
+								sx={{ width: "100%" }}
+								onClick={() => {
+									setIsSummarizing(true);
+									setTimeout(() => {
+										setIsSummarizing(false);
+										// TODO: Go to summary page or next step
+									}, 2000);
+								}}
+							>
+								Next
+							</Button>
+						</Box>
+					</Box>
+				)}
+				{missingTypes && missingTypes.length === 0 && (
+					<Button
+						variant="contained"
+						sx={{ mt: 2, width: "100%" }}
+						onClick={() => {
+							setIsSummarizing(true);
+							setTimeout(() => {
+								setIsSummarizing(false);
+								// TODO: Go to summary page or next step
+							}, 2000);
+						}}
+					>
+						Continue
+					</Button>
+				)}
+			</Box>
+		);
 	}
 
 	return (
@@ -222,19 +342,14 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 				<Button
 					variant="contained"
 					sx={{ mt: 2, width: "100%" }}
-					disabled={!allDone || files.length === 0}
-					onClick={e => {
-						e.stopPropagation();
-						setIsSummarizing(true);
-						setTimeout(() => {
-							setIsSummarizing(false);
-							setIsAnalyzed(true);
-							props.onFileUploaded?.(true);
-						}, 2000);
-					}}
+					disabled={!allDone || files.length === 0 || loading}
+					onClick={handleNext}
 				>
-					Next
+					{loading ? "Reviewing..." : "Next"}
 				</Button>
+				{error && (
+					<Typography color="error" sx={{ mt: 1 }}>{error}</Typography>
+				)}
 			</Stack>
 		</Box>
 	);
