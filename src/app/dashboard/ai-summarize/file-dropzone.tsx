@@ -41,44 +41,6 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 	const [loading, setLoading] = React.useState(false);
 	const [error, setError] = React.useState<string | null>(null);
 
-	const uploadFile = (fileObj: { file: FileWithPath; status: string; progress: number }) => {
-		// Simulate upload with progress
-		setFiles(prev =>
-			prev.map(f =>
-				f.file.name === fileObj.file.name ? { ...f, status: "uploading", progress: 0, error: undefined } : f
-			)
-		);
-		let progress = 0;
-		const interval = setInterval(() => {
-			progress += Math.random() * 30 + 10;
-			if (progress >= 100) {
-				clearInterval(interval);
-				// Simulate random error
-				if (Math.random() < 0.2) {
-					setFiles(prev =>
-						prev.map(f =>
-							f.file.name === fileObj.file.name
-								? { ...f, status: "error", progress: 0, error: "Upload failed" }
-								: f
-						)
-					);
-				} else {
-					setFiles(prev =>
-						prev.map(f =>
-							f.file.name === fileObj.file.name ? { ...f, status: "uploaded", progress: 100 } : f
-						)
-					);
-				}
-			} else {
-				setFiles(prev =>
-					prev.map(f =>
-						f.file.name === fileObj.file.name ? { ...f, progress: Math.min(progress, 100) } : f
-					)
-				);
-			}
-		}, 400);
-	};
-
 	const handleDrop = React.useCallback(
 		(acceptedFiles: FileWithPath[]) => {
 			const allowedExtensions = [
@@ -92,17 +54,12 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 			const filteredFiles = acceptedFiles.filter(f =>
 				allowedTypes.includes(f.type) || allowedExtensions.some(ext => f.name.toLowerCase().endsWith(ext))
 			);
-			const newFiles = filteredFiles.map(file => ({ file, status: "uploading" as const, progress: 0 }));
+			const newFiles = filteredFiles.map(file => ({ file, status: "uploaded" as const, progress: 100 }));
 			setFiles(prev => [...prev, ...newFiles]);
-			newFiles.forEach(uploadFile);
 			props.onDrop?.(acceptedFiles, [], undefined as any);
 		},
 		[props]
 	);
-
-	const retryUpload = (fileObj: { file: FileWithPath }) => {
-		uploadFile({ ...fileObj, status: "uploading", progress: 0 });
-	};
 
 	const allDone = files.length > 0 && files.every(f => f.status === "uploaded" || f.status === "error");
 	const hasUploading = files.some(f => f.status === "uploading");
@@ -315,9 +272,6 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 									<Typography variant="body2" sx={{ fontWeight: 500, color: "var(--mui-palette-text-primary)" }} noWrap>
 										{shortenFileName(f.file.name)}
 									</Typography>
-									{f.status === "uploading" && (
-										<LinearProgress variant="determinate" value={f.progress} sx={{ height: 6, borderRadius: 2, mt: 0.5 }} />
-									)}
 									{f.status === "uploaded" && (
 										<Typography variant="caption" color="success.main">Uploaded</Typography>
 									)}
@@ -338,11 +292,6 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 								>
 									<TrashIcon size={18} />
 								</IconButton>
-								{f.status === "error" && (
-									<Button size="small" color="error" onClick={e => { e.stopPropagation(); retryUpload(f); }} sx={{ ml: 1 }}>
-										Retry
-									</Button>
-								)}
 							</Box>
 						))}
 					</Box>
