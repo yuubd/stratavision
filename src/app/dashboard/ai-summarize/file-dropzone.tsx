@@ -149,6 +149,14 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 		}
 	};
 
+	function shortenFileName(name: string, maxLength = 30) {
+		if (name.length <= maxLength) return name;
+		const extIndex = name.lastIndexOf('.');
+		const ext = extIndex !== -1 ? name.slice(extIndex) : '';
+		const base = name.slice(0, maxLength - ext.length - 3);
+		return `${base}...${ext}`;
+	}
+
 	if (isSummarizing) {
 		return <ProgressIndicator />;
 	}
@@ -181,7 +189,7 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 								<FileIcon size={20} />
 							</Avatar>
 							<Typography variant="body2" sx={{ fontWeight: 500, color: "var(--mui-palette-text-primary)", flex: 1 }} noWrap>
-								{f.filename}
+								{shortenFileName(f.filename)}
 							</Typography>
 							<Typography variant="caption" color="primary" sx={{ ml: 1 }}>
 								{f.type}
@@ -305,7 +313,7 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 								</Avatar>
 								<Box sx={{ flex: 1 }}>
 									<Typography variant="body2" sx={{ fontWeight: 500, color: "var(--mui-palette-text-primary)" }} noWrap>
-										{f.file.name}
+										{shortenFileName(f.file.name)}
 									</Typography>
 									{f.status === "uploading" && (
 										<LinearProgress variant="determinate" value={f.progress} sx={{ height: 6, borderRadius: 2, mt: 0.5 }} />
