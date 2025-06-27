@@ -103,10 +103,24 @@ export function FileDropzone({ title, description, subtitle, onShowSummary, ...p
 	const handleSummarize = async () => {
 		setIsSummarizing(true);
 		setError(null);
-		setTimeout(() => {
-			setIsSummarizing(false);
+		try {
+			const formData = new FormData();
+			files.forEach(f => {
+				if (f.status === "uploaded") {
+					formData.append("file", f.file, f.file.name);
+				}
+			});
+			const res = await fetch("/api/ai-summarize/summary", {
+				method: "POST",
+				body: formData,
+			});
+			if (!res.ok) throw new Error("Summary failed");
 			onShowSummary?.(true);
-		}, 2000);
+		} catch (err) {
+			setError("Failed to summarize files");
+		} finally {
+			setIsSummarizing(false);
+		}
 	};
 
 	function shortenFileName(name: string, maxLength = 30) {
