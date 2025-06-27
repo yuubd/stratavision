@@ -10,7 +10,7 @@ import type { DocumentSummaryData, QuestionAnswer } from "../dashboard/ai-summar
 import { PDFViewer } from "../dashboard/ai-summarize/pdf-viewer";
 
 export interface SummaryViewProps {
-  data: DocumentSummaryData;
+  data?: DocumentSummaryData;
   pdfUrl: string;
   showHeader?: boolean;
   showCompactHeader?: boolean;
@@ -26,6 +26,19 @@ export function SummaryView({
   onSave,
   isSaving = false 
 }: SummaryViewProps): React.JSX.Element {
+  if (!data) {
+    return (
+      <Box sx={{ p: 4, textAlign: 'center' }}>
+        <Typography variant="h6" color="error" gutterBottom>
+          Summary does not exist
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          The summary could not be found or generated. Please try again or contact support.
+        </Typography>
+      </Box>
+    );
+  }
+
   const [globalExpandState, setGlobalExpandState] = React.useState(true);
   const [lastToggleTime, setLastToggleTime] = React.useState(0);
   const [selectedAnswer, setSelectedAnswer] = React.useState<string | null>(null);

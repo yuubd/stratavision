@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { mockDocumentSummary } from "@/app/mock-data";
 import type { DocumentSummaryData } from "./types";
 import { saveSummary } from "../storage/service";
 import { useRouter } from "next/navigation";
@@ -12,7 +11,7 @@ export interface DocumentSummaryProps {
   data?: DocumentSummaryData;
 }
 
-export function DocumentSummary({ data = mockDocumentSummary }: DocumentSummaryProps): React.JSX.Element {
+export function DocumentSummary({ data }: DocumentSummaryProps): React.JSX.Element {
   const [isSaving, setIsSaving] = React.useState(false);
   const router = useRouter();
 

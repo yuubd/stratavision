@@ -19,7 +19,7 @@ export interface FileDropzoneProps extends DropzoneOptions {
 	title: string;
 	description: string;
 	subtitle: string;
-	onShowSummary?: (val: boolean) => void;
+	onShowSummary?: (val: boolean, summaryData?: any) => void;
 }
 
 export function FileDropzone({ title, description, subtitle, onShowSummary, ...props }: FileDropzoneProps): React.JSX.Element {
@@ -115,7 +115,8 @@ export function FileDropzone({ title, description, subtitle, onShowSummary, ...p
 				body: formData,
 			});
 			if (!res.ok) throw new Error("Summary failed");
-			onShowSummary?.(true);
+			const summaryData = await res.json();
+			onShowSummary?.(true, summaryData);
 		} catch (err) {
 			setError("Failed to summarize files");
 		} finally {
