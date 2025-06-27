@@ -8,26 +8,21 @@ import Avatar from "@mui/material/Avatar";
 import { useDropzone } from "react-dropzone";
 import { Plus as PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { ProgressIndicator } from "./progress-indicator";
-import { DocumentSummary } from "./document-summary";
-import type { DropzoneOptions, FileWithPath } from "react-dropzone";
-import LinearProgress from "@mui/material/LinearProgress";
 import Button from "@mui/material/Button";
 import { File as FileIcon } from "@phosphor-icons/react/dist/ssr/File";
 import { WarningDiamond as ErrorIcon } from "@phosphor-icons/react/dist/ssr/WarningDiamond";
 import { Trash as TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import IconButton from "@mui/material/IconButton";
-
-export type File = FileWithPath;
+import type { DropzoneOptions, FileWithPath } from "react-dropzone";
 
 export interface FileDropzoneProps extends DropzoneOptions {
 	title: string;
 	description: string;
 	subtitle: string;
-	onAnswerSelect?: (answer: string | null) => void;
-	onFileUploaded?: (val: boolean) => void;
+	onShowSummary?: (val: boolean) => void;
 }
 
-export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...props }: FileDropzoneProps): React.JSX.Element {
+export function FileDropzone({ title, description, subtitle, onShowSummary, ...props }: FileDropzoneProps): React.JSX.Element {
 	const [files, setFiles] = React.useState<{
 		file: FileWithPath;
 		status: "uploading" | "uploaded" | "error";
@@ -62,7 +57,6 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 	);
 
 	const allDone = files.length > 0 && files.every(f => f.status === "uploaded" || f.status === "error");
-	const hasUploading = files.some(f => f.status === "uploading");
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		...props,
@@ -104,6 +98,15 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 		} finally {
 			setLoading(false);
 		}
+	};
+
+	const handleSummarize = async () => {
+		setIsSummarizing(true);
+		setError(null);
+		setTimeout(() => {
+			setIsSummarizing(false);
+			onShowSummary?.(true);
+		}, 2000);
 	};
 
 	function shortenFileName(name: string, maxLength = 30) {
@@ -179,13 +182,7 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 							<Button
 								variant="contained"
 								sx={{ width: "100%" }}
-								onClick={() => {
-									setIsSummarizing(true);
-									setTimeout(() => {
-										setIsSummarizing(false);
-										// TODO: Go to summary page or next step
-									}, 2000);
-								}}
+								onClick={handleSummarize}
 							>
 								Next
 							</Button>
@@ -196,13 +193,7 @@ export function FileDropzone({ title, description, subtitle, onAnswerSelect, ...
 					<Button
 						variant="contained"
 						sx={{ mt: 2, width: "100%" }}
-						onClick={() => {
-							setIsSummarizing(true);
-							setTimeout(() => {
-								setIsSummarizing(false);
-								// TODO: Go to summary page or next step
-							}, 2000);
-						}}
+						onClick={handleSummarize}
 					>
 						Continue
 					</Button>

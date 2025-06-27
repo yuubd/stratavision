@@ -10,10 +10,9 @@ import { SummaryView } from "../../shared/summary-view";
 
 export interface DocumentSummaryProps {
   data?: DocumentSummaryData;
-  onAnswerSelect?: (answer: string | null) => void;
 }
 
-export function DocumentSummary({ data = mockDocumentSummary, onAnswerSelect }: DocumentSummaryProps): React.JSX.Element {
+export function DocumentSummary({ data = mockDocumentSummary }: DocumentSummaryProps): React.JSX.Element {
   const [isSaving, setIsSaving] = React.useState(false);
   const router = useRouter();
 
