@@ -5,14 +5,16 @@ import { useState } from "react";
 import Box from "@mui/material/Box";
 import { FileDropzone } from "@/app/dashboard/ai-summarize/file-dropzone";
 import { DocumentSummary } from "@/app/dashboard/ai-summarize/document-summary";
+import type { SummaryDataResponse } from "@/types/api";
 
 export default function AiSummarizePage(): React.JSX.Element {
 	const [showSummary, setShowSummary] = useState(false);
-	const [summaryData, setSummaryData] = useState<any>(null);
+	const [summaryData, setSummaryData] = useState<SummaryDataResponse>({} as SummaryDataResponse);
 
-	const handleShowSummary = (show: boolean, summary?: any) => {
+	const handleShowSummary = (show: boolean, summary: SummaryDataResponse) => {
 		setShowSummary(show);
 		if (summary) setSummaryData(summary);
+
 	};
 
 	return (
@@ -26,7 +28,7 @@ export default function AiSummarizePage(): React.JSX.Element {
 		>
 			<Box sx={{ maxWidth: showSummary ? "100%" : 600, mx: "auto", width: "100%" }}>
 				{showSummary ? (
-					<DocumentSummary data={summaryData} />
+					<DocumentSummary summaryData={summaryData} />
 				) : (
 					<FileDropzone
 						accept={{ "application/pdf": [".pdf"] }}

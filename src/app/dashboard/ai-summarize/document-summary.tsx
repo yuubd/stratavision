@@ -1,17 +1,17 @@
 "use client";
 
 import * as React from "react";
-import type { DocumentSummaryData } from "./types";
+import type { SummaryDataResponse } from '@/types/api';
 import { saveSummary } from "../storage/service";
 import { useRouter } from "next/navigation";
 import { paths } from "@/paths";
 import { SummaryView } from "../../shared/summary-view";
 
 export interface DocumentSummaryProps {
-  data?: DocumentSummaryData;
+  summaryData: SummaryDataResponse;
 }
 
-export function DocumentSummary({ data }: DocumentSummaryProps): React.JSX.Element {
+export function DocumentSummary({ summaryData }: DocumentSummaryProps): React.JSX.Element {
   const [isSaving, setIsSaving] = React.useState(false);
   const router = useRouter();
 
@@ -37,8 +37,7 @@ export function DocumentSummary({ data }: DocumentSummaryProps): React.JSX.Eleme
 
   return (
     <SummaryView
-      data={data}
-      pdfUrl="/assets/EPS5144_W1_Bylaws.pdf"
+      documentSummary={summaryData}
       onSave={handleSave}
       isSaving={isSaving}
     />

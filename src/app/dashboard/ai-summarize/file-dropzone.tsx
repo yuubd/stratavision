@@ -14,6 +14,7 @@ import { WarningDiamond as ErrorIcon } from "@phosphor-icons/react/dist/ssr/Warn
 import { Trash as TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import IconButton from "@mui/material/IconButton";
 import type { DropzoneOptions, FileWithPath } from "react-dropzone";
+import type { SummaryDataResponse } from "@/types/api";
 
 export interface FileDropzoneProps extends DropzoneOptions {
 	title: string;
@@ -115,7 +116,7 @@ export function FileDropzone({ title, description, subtitle, onShowSummary, ...p
 				body: formData,
 			});
 			if (!res.ok) throw new Error("Summary failed");
-			const summaryData = await res.json();
+			const summaryData: SummaryDataResponse = await res.json();
 			onShowSummary?.(true, summaryData);
 		} catch (err) {
 			setError("Failed to summarize files");

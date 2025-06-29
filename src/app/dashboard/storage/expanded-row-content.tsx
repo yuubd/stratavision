@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import type { FileData } from "./service";
-import type { DocumentSummaryData } from '../ai-summarize/types';
+import type { SummaryDataResponse } from '@/types/api';
 import { SummaryView } from "../../shared/summary-view";
 
 interface ExpandedRowContentProps {
@@ -16,7 +16,7 @@ interface ExpandedRowContentProps {
 export const ExpandedRowContent = ({ file }: ExpandedRowContentProps) => {
   // Always use the hardcoded PDF file
   const pdfUrl = '/assets/EPS5144_W1_Bylaws.pdf';
-  const [summaryData, setSummaryData] = React.useState<DocumentSummaryData | null>(null);
+  const [summaryData, setSummaryData] = React.useState<SummaryDataResponse | null>(null);
   const [loading, setLoading] = React.useState(true);
 
   // Fetch the summary when the component mounts
@@ -62,8 +62,7 @@ export const ExpandedRowContent = ({ file }: ExpandedRowContentProps) => {
               </Box>
             ) : summaryData ? (
               <SummaryView
-                data={summaryData}
-                pdfUrl={pdfUrl}
+                documentSummary={summaryData}
                 showHeader={false}
                 showCompactHeader={true}
               />

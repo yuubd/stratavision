@@ -6,12 +6,11 @@ import { SummarySection } from "../dashboard/ai-summarize/summary-section";
 import { QuestionAnswer as QuestionAnswerComponent } from "../dashboard/ai-summarize/question-answer";
 import { CaretDown as ExpandIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { CaretUp as CollapseIcon } from "@phosphor-icons/react/dist/ssr/CaretUp";
-import type { DocumentSummaryData, QuestionAnswer } from "../dashboard/ai-summarize/types";
+import type { QuestionAnswer, SummaryDataResponse } from '@/types/api';
 import { PDFViewer } from "../dashboard/ai-summarize/pdf-viewer";
 
 export interface SummaryViewProps {
-  data?: DocumentSummaryData;
-  pdfUrl: string;
+  documentSummary?: SummaryDataResponse;
   showHeader?: boolean;
   showCompactHeader?: boolean;
   onSave?: () => void;
@@ -19,14 +18,13 @@ export interface SummaryViewProps {
 }
 
 export function SummaryView({ 
-  data, 
-  pdfUrl,
+  documentSummary,
   showHeader = true,
   showCompactHeader = false,
   onSave,
   isSaving = false 
 }: SummaryViewProps): React.JSX.Element {
-  if (!data) {
+  if (!documentSummary) {
     return (
       <Box sx={{ p: 4, textAlign: 'center' }}>
         <Typography variant="h6" color="error" gutterBottom>
@@ -91,7 +89,7 @@ export function SummaryView({
                 Summary
               </Typography>
               <Typography variant="h4">
-                {data.strataNumber}
+                {documentSummary.strataNumber}
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', gap: 2 }}>
@@ -128,7 +126,7 @@ export function SummaryView({
           borderColor: 'divider'
         }}>
           <Typography variant="h6">
-            Strata #: {data.strataNumber}
+            Strata #: {documentSummary.strataNumber}
           </Typography>
           <Button
             variant="text"
@@ -157,7 +155,7 @@ export function SummaryView({
           maxHeight: showHeader ? undefined : '800px',
         }}>
           {/* Sections */}
-          {data.sections.map((section) => (
+          {documentSummary.sections.map((section) => (
             <SummarySection 
               key={section.title} 
               title={section.title}
@@ -192,24 +190,30 @@ export function SummaryView({
 
         {/* PDF Viewer */}
         {selectedAnswer && (
-          <Box sx={{ 
-            width: "50%",
-            height: showHeader ? "calc(100vh - 100px)" : '800px',
-            position: "sticky",
-            top: showHeader ? 100 : 0,
-            right: 0,
-            bottom: 0,
-            overflow: "hidden",
-            borderLeft: '1px solid',
-            borderColor: 'divider',
-          }}>
-            <PDFViewer 
-              pdfUrl={pdfUrl}
-              highlightedLocation={selectedQA?.location}
-              highlightText={selectedQA?.answer}
-              highlightData={selectedQA?.highlightData}
-            />
-          </Box>
+          documentSummary.pdfUrl ? (
+            <Box sx={{ 
+              width: "50%",
+              height: showHeader ? "calc(100vh - 100px)" : '800px',
+              position: "sticky",
+              top: showHeader ? 100 : 0,
+              right: 0,
+              bottom: 0,
+              overflow: "hidden",
+              borderLeft: '1px solid',
+              borderColor: 'divider',
+            }}>
+              <PDFViewer 
+                pdfUrl={documentSummary.pdfUrl}
+                highlightedLocation={selectedQA?.location}
+                highlightText={selectedQA?.answer}
+                highlightData={selectedQA?.highlightData}
+              />
+            </Box>
+          ) : (
+            <Box sx={{ width: "50%", display: 'flex', alignItems: 'center', justifyContent: 'center', height: showHeader ? "calc(100vh - 100px)" : '800px', borderLeft: '1px solid', borderColor: 'divider', bgcolor: 'background.default' }}>
+              <Typography color="error" variant="h6">PDF not available for this summary.</Typography>
+            </Box>
+          )
         )}
       </Box>
     </Box>

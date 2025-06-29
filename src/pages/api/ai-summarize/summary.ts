@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import formidable, { File as FormidableFile } from 'formidable';
 import { mockDocumentSummary } from '@/app/mock-data';
-
+import { SummaryDataResponse } from '@/types/api';
 export const config = {
   api: {
     bodyParser: false,
@@ -43,10 +43,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // Simulate processing time
+    // createmock SummaryDataResponse
+    const mockSummaryData: SummaryDataResponse = {
+      ...mockDocumentSummary,
+      pdfUrl: "/assets/EPS5144_W1_Bylaws.pdf"
+    };
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Always return the mock summary data
-    res.status(200).json(mockDocumentSummary);
+    res.status(200).json(mockSummaryData);
   });
 } 
