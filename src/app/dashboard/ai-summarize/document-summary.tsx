@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import type { SummaryDataResponse } from '@/types/api';
-import { saveSummary } from "../storage/service";
+import { saveSummary } from "./service";
 import { useRouter } from "next/navigation";
 import { paths } from "@/paths";
 import { SummaryView } from "../../shared/summary-view";
@@ -19,10 +19,9 @@ export function DocumentSummary({ summaryData }: DocumentSummaryProps): React.JS
     try {
       await saveSummary({
         userId: 'test',
-        summary: 'test',
-        pdfPath: '/assets/EPS5144_W1_By.pdf',
-        fileName: 'EPS5144_W1_By.pdf',
-        strataNumber: 'EPS5144'
+        summary: JSON.stringify(summaryData),
+        pdfPath: summaryData.pdfPath,
+        strataNumber: summaryData.strataNumber
       });
       
       // Navigate to files tab after successful save
