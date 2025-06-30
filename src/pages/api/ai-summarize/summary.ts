@@ -46,7 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // createmock SummaryDataResponse
     const mockSummaryData: SummaryDataResponse = {
       ...mockDocumentSummary,
-      pdfUrl: "/assets/EPS5144_W1_Bylaws.pdf"
+      pdfPath: "/assets/EPS5144_W1_Bylaws.pdf"
     };
     await new Promise(resolve => setTimeout(resolve, 1000));
 

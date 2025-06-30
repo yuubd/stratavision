@@ -15,7 +15,6 @@ interface ExpandedRowContentProps {
 
 export const ExpandedRowContent = ({ file }: ExpandedRowContentProps) => {
   // Always use the hardcoded PDF file
-  const pdfUrl = '/assets/EPS5144_W1_Bylaws.pdf';
   const [summaryData, setSummaryData] = React.useState<SummaryDataResponse | null>(null);
   const [loading, setLoading] = React.useState(true);
 

@@ -190,7 +190,7 @@ export function SummaryView({
 
         {/* PDF Viewer */}
         {selectedAnswer && (
-          documentSummary.pdfUrl ? (
+          documentSummary.pdfPath ? (
             <Box sx={{ 
               width: "50%",
               height: showHeader ? "calc(100vh - 100px)" : '800px',
@@ -203,7 +203,7 @@ export function SummaryView({
               borderColor: 'divider',
             }}>
               <PDFViewer 
-                pdfUrl={documentSummary.pdfUrl}
+                pdfPath={documentSummary.pdfPath}
                 highlightedLocation={selectedQA?.location}
                 highlightText={selectedQA?.answer}
                 highlightData={selectedQA?.highlightData}

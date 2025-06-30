@@ -1,7 +1,7 @@
 import type { SummaryDataResponse } from "@/types/api";
 
 export const mockDocumentSummary: SummaryDataResponse = {
-  pdfUrl: "/assets/EPS5144_W1_Bylaws.pdf",
+  pdfPath: "/assets/EPS5144_W1_Bylaws.pdf",
   strataNumber: "NW2378",
   sections: [
     {

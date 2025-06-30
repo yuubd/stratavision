@@ -31,13 +31,13 @@ interface PageHighlightData {
 }
 
 interface PDFViewerProps {
-  pdfUrl: string;
+  pdfPath: string;
   highlightedLocation?: string;
   highlightText?: string;
   highlightData?: PageHighlightData[];
 }
 
-export function PDFViewer({ pdfUrl, highlightedLocation, highlightText, highlightData }: PDFViewerProps): React.JSX.Element {
+export function PDFViewer({ pdfPath, highlightedLocation, highlightText, highlightData }: PDFViewerProps): React.JSX.Element {
   const [numPages, setNumPages] = React.useState<number | null>(null);
   const [scale, setScale] = React.useState(1.2);
   const [error, setError] = React.useState<string | null>(null);
@@ -469,7 +469,7 @@ export function PDFViewer({ pdfUrl, highlightedLocation, highlightText, highligh
         }}
       >
         <Document
-          file={pdfUrl}
+          file={pdfPath}
           onLoadSuccess={onDocumentLoadSuccess}
           onLoadError={onDocumentLoadError}
           loading={

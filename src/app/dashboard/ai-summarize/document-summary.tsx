@@ -14,11 +14,11 @@ export interface DocumentSummaryProps {
 export function DocumentSummary({ summaryData }: DocumentSummaryProps): React.JSX.Element {
   const [isSaving, setIsSaving] = React.useState(false);
   const router = useRouter();
-
   const handleSave = async () => {
     setIsSaving(true);
     try {
       await saveSummary({
+        userId: 'test',
         summary: 'test',
         pdfPath: '/assets/EPS5144_W1_By.pdf',
         fileName: 'EPS5144_W1_By.pdf',

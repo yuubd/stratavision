@@ -40,6 +40,7 @@ export async function getFiles(): Promise<FileData[]> {
 }
 
 export interface SaveSummaryRequest {
+  userId: string;
   summary: string;
   pdfPath: string;
   fileName: string;

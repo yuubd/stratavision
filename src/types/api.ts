@@ -31,5 +31,5 @@ export interface Section {
 export interface SummaryDataResponse {
   strataNumber: string;
   sections: Section[];
-  pdfUrl: string;
+  pdfPath: string;
 } 
