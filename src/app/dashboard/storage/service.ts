@@ -11,40 +11,43 @@ export interface FileData {
 }
 
 /**
- * Mock getFiles for demo: returns 15 example FileData entries.
+ * Fetch files from the storage API for the authenticated user.
  */
 export async function getFiles(): Promise<FileData[]> {
-  const streetNames = [
-    'King St', 'Queen St', 'Main St', 'Elm St', 'Maple Ave',
-    'Oak St', 'Pine Rd', 'Cedar Blvd', 'Park Ln', 'Lakeview Dr',
-    'Sunset Blvd', 'Hillcrest Rd', 'Riverside Dr', 'West End Ave', 'Broadway'
-  ];
-  const cityNames = ['Vancouver', 'Toronto', 'Montreal', 'Calgary', 'Ottawa', 'Edmonton', 'Winnipeg', 'Quebec City'];
-  const buildingNames = ['Alpha Tower', 'Beta Building', 'Gamma Complex', 'Delta House', 'Epsilon Plaza'];
-  return Array.from({ length: 15 }, (_v, i) => {
-    const unit = (i % 20) + 1;
-    const streetNumber = 100 + i * 5;
-    const streetName = streetNames[i % streetNames.length];
-    return {
-      id: `file-${i + 1}`,
-      title: `Example_File_${i + 1}.pdf`, // placeholder
-      strataNumber: `EPS${(1000 + i).toString().padStart(4, '0')}`,
-      developer: i % 2 === 0 ? 'DevCorp' : 'BuildInc',
-      city: cityNames[i % cityNames.length],
-      building: buildingNames[i % buildingNames.length],
-      unitNumber: `${unit}`,
-      streetNumber: `${streetNumber} ${streetName}`,
-      createdAt: new Date(2025, 4, 2, 8 + (i % 12), 0).toISOString(),
-    };
-  });
-}
-
-export async function deleteFile(id: string): Promise<void> {
-  const response = await fetch(`/api/files/${id}`, {
-    method: 'DELETE',
+  const response = await fetch('/api/storage', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
   });
 
   if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Please log in to view your files');
+    }
+    throw new Error('Failed to fetch files');
+  }
+
+  return response.json();
+}
+
+export async function deleteFile(id: string): Promise<void> {
+  const response = await fetch(`/api/storage/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Please log in to delete files');
+    }
+    if (response.status === 404) {
+      throw new Error('File not found');
+    }
     throw new Error('Failed to delete file');
   }
 }

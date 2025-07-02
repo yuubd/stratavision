@@ -9,21 +9,26 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Summary {
   id          String   @id @default(cuid())
   userId      String
   strataNumber String
-  summary     String
+  summary     Json     // JSONB storage for PostgreSQL - efficient JSON queries
   pdfPath     String
-  developer   String?  // Optional for now
-  city        String?  // Optional for now
-  building    String?  // Optional for now
-  unitNumber  String?  // Optional for now
-  streetNumber String? // Optional for now
+  developer   String?  // Property developer/builder
+  city        String?  // City location  
+  building    String?  // Building name
+  unitNumber  String?  // Unit/apartment number
+  streetNumber String? // Street address
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([userId, createdAt])
+  @@index([strataNumber])
+  @@map("summaries")
 }

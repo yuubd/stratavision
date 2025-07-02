@@ -14,14 +14,20 @@ export interface DocumentSummaryProps {
 export function DocumentSummary({ summaryData }: DocumentSummaryProps): React.JSX.Element {
   const [isSaving, setIsSaving] = React.useState(false);
   const router = useRouter();
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
       await saveSummary({
-        userId: 'test',
         summary: JSON.stringify(summaryData),
         pdfPath: summaryData.pdfPath,
-        strataNumber: summaryData.strataNumber
+        strataNumber: summaryData.strataNumber,
+        // Default/empty values for metadata fields
+        developer: '',
+        city: '',
+        building: '',
+        unitNumber: '',
+        streetNumber: '',
       });
       
       // Navigate to files tab after successful save

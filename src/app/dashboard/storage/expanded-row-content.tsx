@@ -14,31 +14,30 @@ interface ExpandedRowContentProps {
 }
 
 export const ExpandedRowContent = ({ file }: ExpandedRowContentProps) => {
-  // Always use the hardcoded PDF file
   const [summaryData, setSummaryData] = React.useState<SummaryDataResponse | null>(null);
   const [loading, setLoading] = React.useState(true);
 
-  // Fetch the summary when the component mounts
+  // Fetch complete file data (including summary) in a single API call
   React.useEffect(() => {
-    const fetchSummary = async () => {
+    const fetchFileData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/storage/${file.id}/summary`);
+        const response = await fetch(`/api/storage/${file.id}`);
         if (response.ok) {
           const data = await response.json();
-          // Parse the stringified JSON summary
-          setSummaryData(JSON.parse(data.summary));
+          // Summary is already parsed in the API response
+          setSummaryData(data.summary);
         } else {
-          console.error('Failed to fetch summary');
+          console.error('Failed to fetch file data');
         }
       } catch (error) {
-        console.error('Error fetching summary:', error);
+        console.error('Error fetching file data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSummary();
+    fetchFileData();
   }, [file.id]);
 
   return (

@@ -1,5 +1,5 @@
 export interface SaveSummaryRequest {
-  userId: string;
+  userId?: string; // Optional since handled by API authentication
   summary: string;
   pdfPath: string;
   strataNumber: string;

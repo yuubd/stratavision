@@ -208,57 +208,56 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
 
   return (
     <Box>
-      {/* Actions toolbar */}
-      {!isEmpty && (
+      {/* Actions toolbar - Always show header */}
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        p: 2, 
+        backgroundColor: 'background.paper',
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+        flexWrap: { xs: 'wrap', md: 'nowrap' },
+        gap: { xs: 1, sm: 2 }
+      }}>
+        {/* Left side - Mobile menu icon */}
         <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          p: 2, 
-          backgroundColor: 'background.paper',
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-          flexWrap: { xs: 'wrap', md: 'nowrap' },
-          gap: { xs: 1, sm: 2 }
+          width: '40px',
+          display: { xs: 'block', lg: 'none' },
+          position: 'relative',
+          zIndex: 1200
         }}>
-          {/* Left side - Mobile menu icon */}
-          <Box sx={{ 
-            width: '40px',
-            display: { xs: 'block', lg: 'none' },
-            position: 'relative',
-            zIndex: 1200
-          }}>
-            <IconButton
-              onClick={() => setOpenNav(true)}
-              sx={{
-                ml: -1,
-                color: 'text.primary'
-              }}
-            >
-              <ListIcon />
-            </IconButton>
-          </Box>
-          
-          {/* Header for all devices */}
-          <Box sx={{ 
-            ml: { xs: 1, sm: 2, lg: 0 }
-          }}>
-            <Typography 
-              variant="h5"
-              sx={{
-                fontWeight: 600,
-                color: 'text.primary',
-                letterSpacing: '-0.01em'
-              }}
-            >
-              Storage
-            </Typography>
-          </Box>
+          <IconButton
+            onClick={() => setOpenNav(true)}
+            sx={{
+              ml: -1,
+              color: 'text.primary'
+            }}
+          >
+            <ListIcon />
+          </IconButton>
+        </Box>
+        
+        {/* Header for all devices */}
+        <Box sx={{ 
+          ml: { xs: 1, sm: 2, lg: 0 }
+        }}>
+          <Typography 
+            variant="h5"
+            sx={{
+              fontWeight: 600,
+              color: 'text.primary',
+              letterSpacing: '-0.01em'
+            }}
+          >
+            Storage
+          </Typography>
+        </Box>
 
-          {/* Spacer to push content to sides */}
-          <Box sx={{ flexGrow: 1 }} />
+        {/* Spacer to push content to sides */}
+        <Box sx={{ flexGrow: 1 }} />
 
-          {/* Right side - Selected count, delete button, and search */}
+                  {/* Right side - Selected count, delete button, and search */}
           <Box sx={{ 
             display: 'flex', 
             alignItems: 'center', 
@@ -306,9 +305,8 @@ export function FileTable({ files, onDelete, onStartUploading, isEmpty = false }
                 }
               }}
             />
-          </Box>
         </Box>
-      )}
+      </Box>
 
       <TableContainer
         sx={{

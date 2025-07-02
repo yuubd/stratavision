@@ -1,19 +1,31 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import type { SaveSummaryRequest } from '@/app/dashboard/ai-summarize/service';
 import { PrismaClient } from '@prisma/client';
+import { createClient } from '@/lib/auth0/client';
 
 const prisma = new PrismaClient();
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Get authenticated user
+    const auth0Client = createClient();
+    const session = await auth0Client.getSession();
+    
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const data: SaveSummaryRequest = await request.json();
 
-    // Save the summary to the database
+    // Save the summary to the database with authenticated user
+    // Parse JSON string for JSONB storage in PostgreSQL
+    const summaryJson = JSON.parse(data.summary);
+    
     const savedFile = await prisma.summary.create({
       data: {
-        userId: data.userId || 'mock-user',
+        userId: session.user.sub,
         strataNumber: data.strataNumber,
-        summary: data.summary,
+        summary: summaryJson, // Store as JSONB object in PostgreSQL
         pdfPath: data.pdfPath,
         developer: data.developer ?? null,
         city: data.city ?? null,
@@ -22,6 +34,8 @@ export async function POST(request: Request) {
         streetNumber: data.streetNumber ?? null,
       },
     });
+
+    console.log(`Summary saved successfully for user ${session.user.sub}: ${savedFile.id}`);
 
     return NextResponse.json({
       id: savedFile.id,
