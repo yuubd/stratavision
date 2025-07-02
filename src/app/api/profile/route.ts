@@ -58,7 +58,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get user metadata from Management API
+    // Get user data from Management API (including updated name and metadata)
+    let userData: any = {};
     let userMetadata: { brokerage?: string; license?: string } = {};
     try {
       const token = await getManagementToken();
@@ -69,21 +70,21 @@ export async function GET(request: NextRequest) {
       });
       
       if (response.ok) {
-        const userData = await response.json();
+        userData = await response.json();
         userMetadata = userData.user_metadata || {};
       }
     } catch (error) {
-      console.error("Error fetching user metadata:", error);
+      console.error("Error fetching user data:", error);
     }
 
     const profile = {
       id: session.user.sub,
-      name: session.user.name,
-      email: session.user.email,
-      picture: session.user.picture,
+      name: userData.name || session.user.name,
+      email: userData.email || session.user.email,
+      picture: userData.picture || session.user.picture,
       brokerage: userMetadata.brokerage || "",
       license: userMetadata.license || "",
-      emailVerified: session.user.email_verified || false,
+      emailVerified: userData.email_verified || session.user.email_verified || false,
       updatedAt: new Date().toISOString()
     };
     return NextResponse.json(profile);
@@ -108,23 +109,62 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { brokerage, license } = body;
+    const { name, email, brokerage, license } = body;
 
-    // Validate required fields
-    if (!brokerage || !license) {
+    // Validate that at least one field is provided
+    if (!name && !email && !brokerage && !license) {
       return NextResponse.json(
-        { error: "Brokerage and license are required" },
+        { error: "At least one field must be provided for update" },
         { status: 400 }
       );
     }
 
-    // Update user profile via Management API
-    await updateUserProfile(session.user.sub, {
-      brokerage,
-      license,
-    });
+    // Prepare updates for different parts of the user profile
+    const profileUpdates: any = {};
+    const metadataUpdates: any = {};
 
-    console.log("Profile updated successfully:", { brokerage, license, userId: session.user.sub });
+    // Name and email go to the main profile
+    if (name !== undefined) profileUpdates.name = name;
+    if (email !== undefined) profileUpdates.email = email;
+
+    // Brokerage and license go to user_metadata
+    if (brokerage !== undefined) metadataUpdates.brokerage = brokerage;
+    if (license !== undefined) metadataUpdates.license = license;
+
+    const token = await getManagementToken();
+
+    // Update main profile fields if any
+    if (Object.keys(profileUpdates).length > 0) {
+      console.log("Updating profile fields:", profileUpdates);
+      const response = await fetch(`https://${process.env.AUTH0_DOMAIN}/api/v2/users/${session.user.sub}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profileUpdates),
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        console.error("Failed to update profile fields:", error);
+        throw new Error(`Failed to update user profile: ${error}`);
+      }
+      
+      const updateResult = await response.json();
+      console.log("Profile fields updated successfully:", updateResult);
+    }
+
+    // Update user metadata if any
+    if (Object.keys(metadataUpdates).length > 0) {
+      await updateUserProfile(session.user.sub, metadataUpdates);
+    }
+
+    console.log("Profile updated successfully:", { 
+      profileUpdates, 
+      metadataUpdates, 
+      userId: session.user.sub 
+    });
 
     return NextResponse.json({ 
       success: true,
