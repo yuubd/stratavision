@@ -10,6 +10,8 @@ import DialogContent from "@mui/material/DialogContent";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import Skeleton from "@mui/material/Skeleton";
+import CircularProgress from "@mui/material/CircularProgress";
 import { Camera as CameraIcon } from "@phosphor-icons/react/dist/ssr/Camera";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -103,8 +105,9 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
     }
   };
 
-  // Validation
+  // Validation - only show errors when not loading and name has been touched
   const isNameValid = name.trim().length > 0;
+  const showValidationErrors = !loading && profile !== null;
 
   const handleSave = async () => {
     if (!isNameValid) {
@@ -138,80 +141,105 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
 
   const isDatabaseUser = user?.sub?.startsWith('auth0|');
 
-  const renderProfileTab = () => (
+  const renderLoadingSkeleton = () => (
     <Stack spacing={3} alignItems="center" sx={{ mt: 1 }}>
-      {error && (
-        <Alert severity="error" sx={{ width: "100%" }}>
-          {error}
-        </Alert>
-      )}
-      {success && (
-        <Alert severity="success" sx={{ width: "100%" }}>
-          {success}
-        </Alert>
-      )}
-      <Box sx={{ position: "relative" }}>
-        <Avatar
-          src={avatar || profile?.picture || user?.picture || undefined}
-          sx={{ width: 80, height: 80, fontSize: 36, bgcolor: "#1565c0" }}
-        >
-          {(!avatar && !profile?.picture && !user?.picture && (profile?.name || user?.name)) 
-            ? (profile?.name || user?.name)[0].toUpperCase() 
-            : null}
-        </Avatar>
-        <IconButton
-          color="primary"
-          aria-label="upload picture"
-          component="label"
-          sx={{ position: "absolute", bottom: 0, right: 0, bgcolor: "background.paper", boxShadow: 1 }}
-        >
-          <input hidden accept="image/*" type="file" onChange={handleAvatarChange} />
-          <CameraIcon size={20} />
-        </IconButton>
+      <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', gap: 2 }}>
+        <Skeleton variant="circular" width={80} height={80} />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <CircularProgress size={16} />
+          <Skeleton variant="text" width={100} height={20} />
+        </Box>
       </Box>
-      <TextField
-        label="Name"
-        value={name}
-        onChange={e => setName(e.target.value)}
-        fullWidth
-        disabled={loading}
-        error={!isNameValid}
-        helperText={!isNameValid ? "Name cannot be empty or whitespace only." : ""}
-      />
-      <TextField
-        label="Email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        fullWidth
-        InputProps={{
-          readOnly: !isDatabaseUser,
-        }}
-        helperText={!isDatabaseUser ? "Email cannot be changed for social logins." : ""}
-      />
-      <TextField
-        label="Real Estate Brokerage Name"
-        value={brokerage}
-        onChange={e => setBrokerage(e.target.value)}
-        fullWidth
-        disabled={loading}
-      />
-      <TextField
-        label="Realtor License Number"
-        value={license}
-        onChange={e => setLicense(e.target.value)}
-        fullWidth
-        disabled={loading}
-      />
-      <Button
-        variant="contained"
-        onClick={handleSave}
-        disabled={saving || loading || !isNameValid}
-        sx={{ mt: 2, width: "100%" }}
-      >
-        {saving ? "Saving..." : "Save"}
-      </Button>
+      <Skeleton variant="rectangular" width="100%" height={56} sx={{ borderRadius: 1 }} />
+      <Skeleton variant="rectangular" width="100%" height={56} sx={{ borderRadius: 1 }} />
+      <Skeleton variant="rectangular" width="100%" height={56} sx={{ borderRadius: 1 }} />
+      <Skeleton variant="rectangular" width="100%" height={56} sx={{ borderRadius: 1 }} />
+      <Skeleton variant="rectangular" width="100%" height={48} sx={{ borderRadius: 1 }} />
     </Stack>
   );
+
+  const renderProfileTab = () => {
+    // Show loading skeleton while fetching profile data
+    if (loading && !profile) {
+      return renderLoadingSkeleton();
+    }
+
+    return (
+      <Stack spacing={3} alignItems="center" sx={{ mt: 1 }}>
+        {error && (
+          <Alert severity="error" sx={{ width: "100%" }}>
+            {error}
+          </Alert>
+        )}
+        {success && (
+          <Alert severity="success" sx={{ width: "100%" }}>
+            {success}
+          </Alert>
+        )}
+        <Box sx={{ position: "relative" }}>
+          <Avatar
+            src={avatar || profile?.picture || user?.picture || undefined}
+            sx={{ width: 80, height: 80, fontSize: 36, bgcolor: "#1565c0" }}
+          >
+            {(!avatar && !profile?.picture && !user?.picture && (profile?.name || user?.name)) 
+              ? (profile?.name || user?.name)[0].toUpperCase() 
+              : null}
+          </Avatar>
+          <IconButton
+            color="primary"
+            aria-label="upload picture"
+            component="label"
+            sx={{ position: "absolute", bottom: 0, right: 0, bgcolor: "background.paper", boxShadow: 1 }}
+          >
+            <input hidden accept="image/*" type="file" onChange={handleAvatarChange} />
+            <CameraIcon size={20} />
+          </IconButton>
+        </Box>
+        <TextField
+          label="Name"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          fullWidth
+          disabled={loading}
+          error={showValidationErrors && !isNameValid}
+          helperText={showValidationErrors && !isNameValid ? "Name cannot be empty or whitespace only." : ""}
+        />
+        <TextField
+          label="Email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          fullWidth
+          disabled={loading}
+          InputProps={{
+            readOnly: !isDatabaseUser,
+          }}
+          helperText={!isDatabaseUser ? "Email cannot be changed for social logins." : ""}
+        />
+        <TextField
+          label="Real Estate Brokerage Name"
+          value={brokerage}
+          onChange={e => setBrokerage(e.target.value)}
+          fullWidth
+          disabled={loading}
+        />
+        <TextField
+          label="Realtor License Number"
+          value={license}
+          onChange={e => setLicense(e.target.value)}
+          fullWidth
+          disabled={loading}
+        />
+        <Button
+          variant="contained"
+          onClick={handleSave}
+          disabled={saving || loading || !isNameValid}
+          sx={{ mt: 2, width: "100%" }}
+        >
+          {saving ? "Saving..." : "Save"}
+        </Button>
+      </Stack>
+    );
+  };
 
   const renderAppSettingsTab = () => (
     <Stack spacing={4} sx={{ mt: 2 }}>
