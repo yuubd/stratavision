@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database (same as production)
+  postgres:
+    image: postgres:15-alpine
+    container_name: stratavision-postgres-dev
+    env_file:
+      - .env
+      - .env.local
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-stratavision_dev}
+      POSTGRES_USER: ${POSTGRES_USER:-stratavision}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - stratavision-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stratavision"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # NextJS Development Server
+  app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: stratavision-app-dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+      - .env.local
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-stratavision}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-stratavision_dev}?schema=public
+      # Auth0 Configuration
+      - AUTH0_SECRET=${AUTH0_SECRET:?AUTH0_SECRET is required}
+      - AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID:?AUTH0_CLIENT_ID is required}
+      - AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET:?AUTH0_CLIENT_SECRET is required}
+      - AUTH0_DOMAIN=${AUTH0_DOMAIN:?AUTH0_DOMAIN is required}
+      - AUTH0_MANAGEMENT_CLIENT_ID=${AUTH0_MANAGEMENT_CLIENT_ID:?AUTH0_MANAGEMENT_CLIENT_ID is required}
+      - AUTH0_MANAGEMENT_CLIENT_SECRET=${AUTH0_MANAGEMENT_CLIENT_SECRET:?AUTH0_MANAGEMENT_CLIENT_SECRET is required}
+    ports:
+      - "3000:3000"
+    networks:
+      - stratavision-network
+    volumes:
+      # Mount source code for hot reload
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    restart: unless-stopped
+
+networks:
+  stratavision-network:
+    driver: bridge
+
+volumes:
+  postgres_dev_data: 

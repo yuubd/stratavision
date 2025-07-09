@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: stratavision-postgres
+    env_file:
+      - .env
+      - .env.local
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-stratavision}
+      POSTGRES_USER: ${POSTGRES_USER:-stratavision}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - stratavision-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stratavision"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # NextJS Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: stratavision-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+      - .env.local
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-stratavision}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-stratavision}?schema=public
+      # Auth0 Configuration
+      - AUTH0_SECRET=${AUTH0_SECRET:?AUTH0_SECRET is required}
+      - AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID:?AUTH0_CLIENT_ID is required}
+      - AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET:?AUTH0_CLIENT_SECRET is required}
+      - AUTH0_DOMAIN=${AUTH0_DOMAIN:?AUTH0_DOMAIN is required}
+      - AUTH0_MANAGEMENT_CLIENT_ID=${AUTH0_MANAGEMENT_CLIENT_ID:?AUTH0_MANAGEMENT_CLIENT_ID is required}
+      - AUTH0_MANAGEMENT_CLIENT_SECRET=${AUTH0_MANAGEMENT_CLIENT_SECRET:?AUTH0_MANAGEMENT_CLIENT_SECRET is required}
+    ports:
+      - "3000:3000"
+    networks:
+      - stratavision-network
+    volumes:
+      # Mount the public directory for file uploads
+      - ./public:/app/public
+    restart: unless-stopped
+
+networks:
+  stratavision-network:
+    driver: bridge
+
+volumes:
+  postgres_data: 
