@@ -77,9 +77,17 @@ export async function GET(request: NextRequest) {
       console.error("Error fetching user data:", error);
     }
 
+    // Construct name from given_name and family_name if name is empty or just whitespace
+    let finalName = userData.name || session.user.name;
+    if (!finalName || finalName.trim() === '') {
+      const givenName = userData.given_name || session.user.given_name || '';
+      const familyName = userData.family_name || session.user.family_name || '';
+      finalName = `${givenName} ${familyName}`.trim();
+    }
+
     const profile = {
       id: session.user.sub,
-      name: userData.name || session.user.name,
+      name: finalName,
       email: userData.email || session.user.email,
       picture: userData.picture || session.user.picture,
       brokerage: userMetadata.brokerage || "",
@@ -87,6 +95,7 @@ export async function GET(request: NextRequest) {
       emailVerified: userData.email_verified || session.user.email_verified || false,
       updatedAt: new Date().toISOString()
     };
+    
     return NextResponse.json(profile);
   } catch (error) {
     console.error("Error fetching profile:", error);
@@ -119,13 +128,20 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // Check if this is a database user (can update email) or social login user (cannot update email)
+    const isDatabaseUser = session.user.sub.startsWith('auth0|');
+
     // Prepare updates for different parts of the user profile
     const profileUpdates: any = {};
     const metadataUpdates: any = {};
 
-    // Name and email go to the main profile
+    // Name goes to the main profile for all users
     if (name !== undefined) profileUpdates.name = name;
-    if (email !== undefined) profileUpdates.email = email;
+    
+    // Email can only be updated for database users, not social login users
+    if (email !== undefined && isDatabaseUser) {
+      profileUpdates.email = email;
+    }
 
     // Brokerage and license go to user_metadata
     if (brokerage !== undefined) metadataUpdates.brokerage = brokerage;
