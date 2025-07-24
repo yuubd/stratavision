@@ -22,12 +22,12 @@ export function DocumentSummary({ summaryData }: DocumentSummaryProps): React.JS
         summary: JSON.stringify(summaryData),
         pdfPath: summaryData.pdfPath,
         strataNumber: summaryData.strataNumber,
-        // Default/empty values for metadata fields
-        developer: '',
-        city: '',
-        building: '',
-        unitNumber: '',
-        streetNumber: '',
+        // Use metadata extracted by AI, fallback to empty string if not available
+        developer: summaryData.developer || '',
+        city: summaryData.city || '',
+        building: summaryData.building || '',
+        unitNumber: summaryData.unitNumber || '',
+        streetNumber: summaryData.streetNumber || '',
       });
       
       // Navigate to files tab after successful save

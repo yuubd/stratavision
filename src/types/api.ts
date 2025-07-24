@@ -32,4 +32,10 @@ export interface SummaryDataResponse {
   strataNumber: string;
   sections: Section[];
   pdfPath: string;
+  // Metadata fields extracted from documents
+  developer?: string;
+  city?: string;
+  building?: string;
+  unitNumber?: string;
+  streetNumber?: string;
 } 

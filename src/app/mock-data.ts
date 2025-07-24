@@ -3,6 +3,12 @@ import type { SummaryDataResponse } from "@/types/api";
 export const mockDocumentSummary: SummaryDataResponse = {
   pdfPath: "/assets/EPS5144_W1_Bylaws.pdf",
   strataNumber: "NW2378",
+  // Mock metadata extracted from document analysis
+  developer: "Polygon Homes",
+  city: "Vancouver",
+  building: "The Summit Tower",
+  unitNumber: "1202",
+  streetNumber: "123 Main Street",
   sections: [
     {
       title: "Bylaws",
