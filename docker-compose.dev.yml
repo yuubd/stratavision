@@ -36,6 +36,8 @@ services:
     env_file:
       - .env
       - .env.local
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-stratavision}:${POSTGRES_PASSWORD}@postgres:5432/stratavision_dev?schema=public
     ports:
       - "3000:3000"
     networks:

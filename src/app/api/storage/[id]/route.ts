@@ -20,92 +20,40 @@ export async function GET(
 
     const { id } = await params;
     
-    // // Query database for complete file information
-    // const fileRecord = await prisma.summary.findFirst({
-    //   where: {
-    //     id: id,
-    //     userId: session.user.sub
-    //   }
-    // });
-
-    // if (!fileRecord) {
-    //   return NextResponse.json(
-    //     { error: 'File not found or access denied' },
-    //     { status: 404 }
-    //   );
-    // }
-
-    // console.log(`Retrieved complete file data for ${id} by user ${session.user.sub}`);
-
-    // Return complete file information
-    // return NextResponse.json({
-    //   file: {
-    //     id: fileRecord.id,
-    //     title: `${fileRecord.unitNumber}-${fileRecord.streetNumber}`,
-    //     strataNumber: fileRecord.strataNumber,
-    //     developer: fileRecord.developer ?? "",
-    //     city: fileRecord.city ?? "",
-    //     building: fileRecord.building ?? "",
-    //     unitNumber: fileRecord.unitNumber ?? "",
-    //     streetNumber: fileRecord.streetNumber ?? "",
-    //     pdfPath: fileRecord.pdfPath,
-    //     createdAt: fileRecord.createdAt.toISOString(),
-    //   },
-    //   summary: fileRecord.summary, // JSONB automatically returns as object
-    //   pdfPath: fileRecord.pdfPath
-    // });
-  
-
-    // TEMPORARY: Return mock data while PostgreSQL is being set up
-    console.log(`Returning mock file data for ${id} by user ${session.user.sub}`);
-
-    // Mock file data for testing
-    const mockFiles = {
-      'mock-1': {
-        file: {
-          id: 'mock-1',
-          title: '101-123 Main St',
-          strataNumber: 'VIS123',
-          developer: 'ABC Development',
-          city: 'Vancouver',
-          building: 'The Summit',
-          unitNumber: '101',
-          streetNumber: '123 Main St',
-          pdfPath: '/assets/EPS5144_W1_Bylaws.pdf',
-          createdAt: new Date('2024-01-15').toISOString(),
-        },
-        summary: mockDocumentSummary,
-        pdfPath: '/assets/EPS5144_W1_Bylaws.pdf'
-      },
-      'mock-2': {
-        file: {
-          id: 'mock-2',
-          title: '205-456 Oak Ave', 
-          strataNumber: 'VIS456',
-          developer: 'XYZ Properties',
-          city: 'Burnaby',
-          building: 'Oak Tower',
-          unitNumber: '205',
-          streetNumber: '456 Oak Ave',
-          pdfPath: '/assets/EPS5144_W1_Bylaws.pdf',
-          createdAt: new Date('2024-01-10').toISOString(),
-        },
-        summary: mockDocumentSummary,
-        pdfPath: '/assets/EPS5144_W1_Bylaws.pdf'
+    // Query database for complete file information
+    const fileRecord = await prisma.summary.findFirst({
+      where: {
+        id: id,
+        userId: session.user.sub
       }
-    };
+    });
 
-    const fileData = mockFiles[id as keyof typeof mockFiles];
-    
-    if (!fileData) {
+    if (!fileRecord) {
       return NextResponse.json(
         { error: 'File not found or access denied' },
         { status: 404 }
       );
     }
 
+    console.log(`Retrieved complete file data for ${id} by user ${session.user.sub}`);
+
     // Return complete file information
-    return NextResponse.json(fileData);
+    return NextResponse.json({
+      file: {
+        id: fileRecord.id,
+        title: `${fileRecord.unitNumber || ''}-${fileRecord.streetNumber || ''}`.replace(/^-|-$/g, '') || `Strata ${fileRecord.strataNumber}`,
+        strataNumber: fileRecord.strataNumber,
+        developer: fileRecord.developer ?? "",
+        city: fileRecord.city ?? "",
+        building: fileRecord.building ?? "",
+        unitNumber: fileRecord.unitNumber ?? "",
+        streetNumber: fileRecord.streetNumber ?? "",
+        pdfPath: fileRecord.pdfPath,
+        createdAt: fileRecord.createdAt.toISOString(),
+      },
+      summary: fileRecord.summary, // JSONB automatically returns as object
+      pdfPath: fileRecord.pdfPath
+    });
   } catch (error) {
     console.error('Failed to fetch file data:', error);
     return NextResponse.json(
@@ -130,16 +78,22 @@ export async function DELETE(
 
     const { id } = await params;
 
-    // TEMPORARY: Mock delete while PostgreSQL is being set up
-    console.log(`Mock delete of file ${id} by user ${session.user.sub}`);
+    // Delete the file from database
+    const deletedFile = await prisma.summary.deleteMany({
+      where: {
+        id: id,
+        userId: session.user.sub // Ensure user can only delete their own files
+      }
+    });
 
-    // Check if it's one of our mock files
-    if (!['mock-1', 'mock-2'].includes(id)) {
+    if (deletedFile.count === 0) {
       return NextResponse.json(
         { error: 'File not found or access denied' },
         { status: 404 }
       );
     }
+
+    console.log(`Successfully deleted file ${id} for user ${session.user.sub}`);
 
     return NextResponse.json({ 
       success: true,

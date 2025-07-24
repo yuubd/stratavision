@@ -15,59 +15,31 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    //  // Fetch summaries for the authenticated user only
-    //  const summaries = await prisma.summary.findMany({
-    //   where: {
-    //     userId: session.user.sub
-    //   },
-    //   orderBy: {
-    //     createdAt: 'desc'
-    //   }
-    // });
-
-    // console.log(`Fetched ${summaries.length} summaries for user ${session.user.sub}`);
-
-    // // Transform to FileData format
-    // const files: FileData[] = summaries.map(summary => ({
-    //   id: summary.id,
-    //   title: `${summary.unitNumber}-${summary.streetNumber}`, // TODO: might remove
-    //   strataNumber: summary.strataNumber,
-    //   pdfPath: summary.pdfPath,
-    //   createdAt: summary.createdAt.toISOString(),
-    //   developer: summary.developer ?? "",
-    //   city: summary.city ?? "",
-    //   building: summary.building ?? "",
-    //   unitNumber: summary.unitNumber ?? "",
-    //   streetNumber: summary.streetNumber ?? "",
-    // }));
-
-    // TEMPORARY: Return mock data while PostgreSQL is being set up
-    console.log(`Returning mock storage data for user ${session.user.sub}`);
-
-    const files: FileData[] = [
-      {
-        id: 'mock-1',
-        title: '101-123 Main St',
-        strataNumber: 'VIS123',
-        createdAt: new Date('2024-01-15').toISOString(),
-        developer: 'ABC Development',
-        city: 'Vancouver',
-        building: 'The Summit',
-        unitNumber: '101',
-        streetNumber: '123 Main St',
+    // Fetch summaries for the authenticated user only
+    const summaries = await prisma.summary.findMany({
+      where: {
+        userId: session.user.sub
       },
-      {
-        id: 'mock-2', 
-        title: '205-456 Oak Ave',
-        strataNumber: 'VIS456',
-        createdAt: new Date('2024-01-10').toISOString(),
-        developer: 'XYZ Properties',
-        city: 'Burnaby',
-        building: 'Oak Tower',
-        unitNumber: '205',
-        streetNumber: '456 Oak Ave',
+      orderBy: {
+        createdAt: 'desc'
       }
-    ];
+    });
+
+    console.log(`Fetched ${summaries.length} summaries for user ${session.user.sub}`);
+
+    // Transform to FileData format
+    const files: FileData[] = summaries.map(summary => ({
+      id: summary.id,
+      title: `${summary.unitNumber || ''}-${summary.streetNumber || ''}`.replace(/^-|-$/g, '') || `Strata ${summary.strataNumber}`,
+      strataNumber: summary.strataNumber,
+      pdfPath: summary.pdfPath,
+      createdAt: summary.createdAt.toISOString(),
+      developer: summary.developer ?? "",
+      city: summary.city ?? "",
+      building: summary.building ?? "",
+      unitNumber: summary.unitNumber ?? "",
+      streetNumber: summary.streetNumber ?? "",
+    }));
 
     return NextResponse.json(files);
   } catch (error) {
