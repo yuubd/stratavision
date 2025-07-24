@@ -27,6 +27,7 @@ import { Mode } from "@/styles/theme/types";
 import { Settings } from "@/types/settings";
 import { setSettings as setPersistedSettings } from "@/lib/settings";
 import { fetchUserProfile, updateUserProfile, type UserProfile } from "@/lib/profile-service";
+import { useAvatar } from "./avatar-context";
 
 import { useColorScheme } from "@mui/material/styles";
 
@@ -38,7 +39,7 @@ interface SettingsDialogProps {
 
 export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
   const [tab, setTab] = React.useState(0);
-  const [avatar, setAvatar] = React.useState<string | null>(null);
+  const { avatar, setAvatar } = useAvatar();
   
   // Form State
   const [name, setName] = React.useState("");
@@ -178,10 +179,10 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
         )}
         <Box sx={{ position: "relative" }}>
           <Avatar
-            src={avatar || profile?.picture || user?.picture || undefined}
+            src={avatar || undefined}
             sx={{ width: 80, height: 80, fontSize: 36, bgcolor: "#1565c0" }}
           >
-            {(!avatar && !profile?.picture && !user?.picture && (profile?.name || user?.name)) 
+            {(!avatar && (profile?.name || user?.name)) 
               ? (profile?.name || user?.name)[0].toUpperCase() 
               : null}
           </Avatar>

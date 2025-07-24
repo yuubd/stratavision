@@ -10,10 +10,27 @@ import { paths } from "@/paths";
 import { getAppUrl } from "@/lib/get-app-url";
 import Avatar from "@mui/material/Avatar";
 import { SettingsDialog } from "./settings-dialog";
+import { useAvatar } from "./avatar-context";
+
+// Helper function to get user initial from name or construct from given_name/family_name
+function getUserInitial(user: any): string {
+  // First try to use the name field if it's not empty or just whitespace
+  if (user.name && user.name.trim() !== '') {
+    return user.name[0].toUpperCase();
+  }
+  
+  // If name is empty or just whitespace, construct from given_name and family_name
+  const givenName = user.given_name || '';
+  const familyName = user.family_name || '';
+  const fullName = `${givenName} ${familyName}`.trim();
+  
+  return fullName ? fullName[0].toUpperCase() : '';
+}
 
 export function Login(): React.JSX.Element | null {
   const { user, isLoading } = useUser();
   const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const { avatar } = useAvatar();
 
   if (isLoading) return null;
 
@@ -59,8 +76,11 @@ export function Login(): React.JSX.Element | null {
           }
         }}
       >
-        <Avatar sx={{ width: 28, height: 28, bgcolor: '#1565c0', fontWeight: 600, fontSize: 16 }}>
-          {user && user.name ? user.name[0].toUpperCase() : <User color="var(--NavItem-icon-color)" weight="regular" size={20} />}
+        <Avatar 
+          src={avatar || undefined}
+          sx={{ width: 28, height: 28, bgcolor: '#1565c0', fontWeight: 600, fontSize: 16 }}
+        >
+          {!avatar && user && getUserInitial(user) ? getUserInitial(user) : !avatar && <User color="var(--NavItem-icon-color)" weight="regular" size={20} />}
         </Avatar>
         <Typography
           color="inherit"

@@ -16,6 +16,7 @@ import { LocalizationProvider } from "@/components/core/localization-provider";
 import { SettingsProvider } from "@/components/core/settings/settings-context";
 import { ThemeProvider } from "@/components/core/theme-provider";
 import { Toaster } from "@/components/core/toaster";
+import { AvatarProvider } from "@/components/core/avatar-context";
 
 export const metadata = { title: appConfig.name } satisfies Metadata;
 
@@ -52,8 +53,10 @@ export default async function Layout({ children }: LayoutProps): Promise<React.J
 								<I18nProvider lng={language}>
 									<EmotionCacheProvider options={{ key: "mui" }}>
 										<ThemeProvider>
-											{children}
-											<Toaster position="bottom-right" />
+											<AvatarProvider>
+												{children}
+												<Toaster position="bottom-right" />
+											</AvatarProvider>
 										</ThemeProvider>
 									</EmotionCacheProvider>
 								</I18nProvider>
