@@ -13,6 +13,7 @@ import Button from "@mui/material/Button";
 import Skeleton from "@mui/material/Skeleton";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Camera as CameraIcon } from "@phosphor-icons/react/dist/ssr/Camera";
+import { X as XIcon } from "@phosphor-icons/react/dist/ssr/X";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { useTheme } from "@mui/material/styles";
@@ -106,6 +107,10 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
     }
   };
 
+  const handleAvatarReset = () => {
+    setAvatar(null);
+  };
+
   // Validation - only show errors when not loading and name has been touched
   const isNameValid = name.trim().length > 0;
   const showValidationErrors = !loading && profile !== null;
@@ -186,11 +191,39 @@ export function SettingsDialog({ open, onClose, user }: SettingsDialogProps) {
               ? (profile?.name || user?.name)[0].toUpperCase() 
               : null}
           </Avatar>
+          {/* Reset Avatar Button - only show when there's an uploaded avatar */}
+          {avatar && (
+            <IconButton
+              aria-label="reset avatar"
+              onClick={handleAvatarReset}
+              sx={{ 
+                position: "absolute", 
+                top: -8, 
+                right: -8, 
+                color: "white",
+                width: 28,
+                height: 28,
+                "&:hover": {
+                  color: "rgba(255, 255, 255, 0.7)"
+                }
+              }}
+            >
+              <XIcon size={18} />
+            </IconButton>
+          )}
+          {/* Upload Avatar Button */}
           <IconButton
-            color="primary"
             aria-label="upload picture"
             component="label"
-            sx={{ position: "absolute", bottom: 0, right: 0, bgcolor: "background.paper", boxShadow: 1 }}
+            sx={{ 
+              position: "absolute", 
+              bottom: -8, 
+              right: -8, 
+              color: "white",
+              "&:hover": {
+                color: "rgba(255, 255, 255, 0.7)"
+              }
+            }}
           >
             <input hidden accept="image/*" type="file" onChange={handleAvatarChange} />
             <CameraIcon size={20} />
